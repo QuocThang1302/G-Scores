@@ -1,0 +1,76 @@
+name: g-score
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: gscores
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./Backend/database.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gscores"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./Backend
+      target: production
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/gscores
+      PORT: 3000
+      FRONTEND_URL: http://localhost:8080,http://localhost:5173
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - const net=require("net");const socket=net.connect(3000,"127.0.0.1",()=>{socket.end();process.exit(0);});socket.on("error",()=>process.exit(1));setTimeout(()=>process.exit(1),3000);
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./Frontend
+      args:
+        VITE_API_URL: /api
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+
+  seed:
+    build:
+      context: ./Backend
+      target: development
+    profiles:
+      - seed
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/gscores
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./Backend/data:/app/data:ro
+    command: npm run seed
+
+volumes:
+  postgres_data:
