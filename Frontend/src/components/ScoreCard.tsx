@@ -25,6 +25,10 @@ const formatScore = (value: number | string | null | undefined) => {
     return "-";
   }
 
+  if (typeof value === "number") {
+    return value.toFixed(2);
+  }
+
   return String(value);
 };
 
@@ -77,7 +81,11 @@ export default function ScoreCard({ score }: ScoreCardProps) {
     },
   ];
 
-  const languageCode = readScore(score, "maNgoaiNgu", "ma_ngoai_ngu");
+  const languageCode = readScore(score, "maNgoaiNgu", "ma_ngoai_ngu") as
+    | string
+    | null
+    | undefined;
+  const topAdmissionGroups = score.topAdmissionGroups ?? [];
   const availableScores = subjects.filter(
     (subject) => subject.value !== null && subject.value !== undefined,
   );
@@ -91,7 +99,7 @@ export default function ScoreCard({ score }: ScoreCardProps) {
 
   return (
     <section className="panel overflow-hidden">
-      <div className="border-b border-slate-200 bg-slate-950 px-5 py-5 text-white">
+      <div className="border-b border-blue-700 bg-gradient-to-r from-blue-950 via-blue-800 to-sky-500 px-5 py-5 text-white">
         <p className="text-xs font-semibold uppercase tracking-wider text-teal-200">
           Student Number
         </p>
@@ -99,20 +107,41 @@ export default function ScoreCard({ score }: ScoreCardProps) {
           <h2 className="text-3xl font-semibold tracking-normal">
             {score.sbd}
           </h2>
-          <div className="grid grid-cols-2 gap-3 sm:w-80">
-            <div className="rounded-lg bg-white/10 px-3 py-2">
-              <p className="text-xs text-slate-300">Subjects</p>
-              <p className="mt-1 text-lg font-semibold">
-                {availableScores.length}/9
-              </p>
+          {topAdmissionGroups.length > 0 ? (
+            <div className="grid gap-2 sm:min-w-[28rem] sm:grid-cols-3">
+              {topAdmissionGroups.map((group) => (
+                <div
+                  key={group.code}
+                  className="rounded-lg border border-white/20 bg-white/10 px-3 py-3 text-center shadow-sm"
+                >
+                  <p className="text-xs font-semibold text-amber-300">
+                    {group.code}
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold tracking-normal">
+                    {formatScore(group.totalScore)}
+                  </p>
+                  <p className="mt-1 truncate text-xs text-slate-200">
+                    {group.name}
+                  </p>
+                </div>
+              ))}
             </div>
-            <div className="rounded-lg bg-white/10 px-3 py-2">
-              <p className="text-xs text-slate-300">Average</p>
-              <p className="mt-1 text-lg font-semibold">
-                {averageScore === null ? "-" : averageScore.toFixed(2)}
-              </p>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:w-80">
+              <div className="rounded-lg bg-white/10 px-3 py-2">
+                <p className="text-xs text-slate-300">Subjects</p>
+                <p className="mt-1 text-lg font-semibold">
+                  {availableScores.length}/9
+                </p>
+              </div>
+              <div className="rounded-lg bg-white/10 px-3 py-2">
+                <p className="text-xs text-slate-300">Average</p>
+                <p className="mt-1 text-lg font-semibold">
+                  {averageScore === null ? "-" : averageScore.toFixed(2)}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

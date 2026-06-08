@@ -25,6 +25,14 @@ export interface ExamScore {
   gdcd?: number | null;
   maNgoaiNgu?: string | null;
   ma_ngoai_ngu?: string | null;
+  topAdmissionGroups?: AdmissionGroupScore[];
+}
+
+export interface AdmissionGroupScore {
+  code: string;
+  name: string;
+  subjects: string[];
+  totalScore: number;
 }
 
 export interface ScoreLevelReport {

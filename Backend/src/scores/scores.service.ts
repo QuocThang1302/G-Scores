@@ -2,10 +2,29 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { ExamScore, Prisma } from "@prisma/client";
 
 import { PrismaService } from "../prisma/prisma.service";
-import { Subject, SUBJECTS } from "./models/subject.model";
+import { ScoreField, Subject, SUBJECTS } from "./models/subject.model";
 
 type SerializedExamScore = Omit<ExamScore, "id"> & {
   id: string;
+  topAdmissionGroups: AdmissionGroupScore[];
+};
+
+type AdmissionGroupSubject = {
+  field: ScoreField;
+  label: string;
+};
+
+type AdmissionGroupDefinition = {
+  code: string;
+  name: string;
+  subjects: AdmissionGroupSubject[];
+};
+
+type AdmissionGroupScore = {
+  code: string;
+  name: string;
+  subjects: string[];
+  totalScore: number;
 };
 
 type ScoreLevelsReportItem = {
@@ -67,6 +86,99 @@ type DashboardReport = {
   mathScoreDistribution: ScoreDistributionBucket[];
   subjectScoreDistributions: SubjectScoreDistribution[];
 };
+
+const ADMISSION_GROUPS: readonly AdmissionGroupDefinition[] = [
+  {
+    code: "A00",
+    name: "Math-Physics-Chemistry",
+    subjects: [
+      { field: "toan", label: "Math" },
+      { field: "vatLi", label: "Physics" },
+      { field: "hoaHoc", label: "Chemistry" },
+    ],
+  },
+  {
+    code: "A01",
+    name: "Math-Physics-English",
+    subjects: [
+      { field: "toan", label: "Math" },
+      { field: "vatLi", label: "Physics" },
+      { field: "ngoaiNgu", label: "Foreign Language" },
+    ],
+  },
+  {
+    code: "A02",
+    name: "Math-Physics-Biology",
+    subjects: [
+      { field: "toan", label: "Math" },
+      { field: "vatLi", label: "Physics" },
+      { field: "sinhHoc", label: "Biology" },
+    ],
+  },
+  {
+    code: "B00",
+    name: "Math-Chemistry-Biology",
+    subjects: [
+      { field: "toan", label: "Math" },
+      { field: "hoaHoc", label: "Chemistry" },
+      { field: "sinhHoc", label: "Biology" },
+    ],
+  },
+  {
+    code: "C00",
+    name: "Literature-History-Geography",
+    subjects: [
+      { field: "nguVan", label: "Literature" },
+      { field: "lichSu", label: "History" },
+      { field: "diaLi", label: "Geography" },
+    ],
+  },
+  {
+    code: "D01",
+    name: "Math-Literature-English",
+    subjects: [
+      { field: "toan", label: "Math" },
+      { field: "nguVan", label: "Literature" },
+      { field: "ngoaiNgu", label: "Foreign Language" },
+    ],
+  },
+  {
+    code: "D07",
+    name: "Math-Chemistry-English",
+    subjects: [
+      { field: "toan", label: "Math" },
+      { field: "hoaHoc", label: "Chemistry" },
+      { field: "ngoaiNgu", label: "Foreign Language" },
+    ],
+  },
+  {
+    code: "D08",
+    name: "Math-Biology-English",
+    subjects: [
+      { field: "toan", label: "Math" },
+      { field: "sinhHoc", label: "Biology" },
+      { field: "ngoaiNgu", label: "Foreign Language" },
+    ],
+  },
+  {
+    code: "D09",
+    name: "Math-History-English",
+    subjects: [
+      { field: "toan", label: "Math" },
+      { field: "lichSu", label: "History" },
+      { field: "ngoaiNgu", label: "Foreign Language" },
+    ],
+  },
+  {
+    code: "D10",
+    name: "Math-Geography-English",
+    subjects: [
+      { field: "toan", label: "Math" },
+      { field: "diaLi", label: "Geography" },
+      { field: "ngoaiNgu", label: "Foreign Language" },
+    ],
+  },
+];
 
 @Injectable()
 export class ScoresService {
@@ -302,10 +414,52 @@ export class ScoresService {
     return score.toFixed(1);
   }
 
+  private getTopAdmissionGroups(score: ExamScore): AdmissionGroupScore[] {
+    return ADMISSION_GROUPS.map((group) => {
+      const subjectScores = group.subjects.map((subject) => ({
+        ...subject,
+        score: score[subject.field],
+      }));
+
+      if (
+        subjectScores.some(
+          (subject) =>
+            subject.score === null ||
+            subject.score === undefined ||
+            Number.isNaN(subject.score),
+        )
+      ) {
+        return null;
+      }
+
+      const totalScore = subjectScores.reduce(
+        (total, subject) => total + Number(subject.score),
+        0,
+      );
+
+      return {
+        code: group.code,
+        name: group.name,
+        subjects: group.subjects.map((subject) => subject.label),
+        totalScore: this.roundTo(totalScore, 2),
+      };
+    })
+      .filter((group): group is AdmissionGroupScore => group !== null)
+      .sort((left, right) => {
+        if (right.totalScore !== left.totalScore) {
+          return right.totalScore - left.totalScore;
+        }
+
+        return left.code.localeCompare(right.code);
+      })
+      .slice(0, 3);
+  }
+
   private serializeExamScore(score: ExamScore): SerializedExamScore {
     return {
       ...score,
       id: score.id.toString(),
+      topAdmissionGroups: this.getTopAdmissionGroups(score),
     };
   }
 }
