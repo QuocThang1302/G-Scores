@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ExamScore {
+  id          BigInt   @id @default(autoincrement()) @db.BigInt
+  sbd         String   @unique @db.VarChar(20)
+  toan        Float?
+  nguVan      Float?   @map("ngu_van")
+  ngoaiNgu    Float?   @map("ngoai_ngu")
+  vatLi       Float?   @map("vat_li")
+  hoaHoc      Float?   @map("hoa_hoc")
+  sinhHoc     Float?   @map("sinh_hoc")
+  lichSu      Float?   @map("lich_su")
+  diaLi       Float?   @map("dia_li")
+  gdcd        Float?
+  maNgoaiNgu  String?  @map("ma_ngoai_ngu") @db.VarChar(20)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@index([sbd], map: "idx_exam_scores_sbd")
+  @@index([toan, vatLi, hoaHoc], map: "idx_exam_scores_group_a")
+  @@map("exam_scores")
+}
