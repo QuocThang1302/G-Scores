@@ -13,8 +13,8 @@
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    background: #f5f7fb;
-    color: #172033;
+    background: #f3f6fb;
+    color: #111827;
     font-family: "Rubik", ui-sans-serif, system-ui, sans-serif;
   }
 
@@ -26,7 +26,7 @@
 
 @layer components {
   .page-shell {
-    @apply mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8;
   }
 
   .panel {
@@ -34,10 +34,22 @@
   }
 
   .section-title {
-    @apply text-2xl font-semibold tracking-normal text-slate-950;
+    @apply text-2xl font-semibold tracking-normal text-slate-950 sm:text-3xl;
   }
 
   .section-copy {
     @apply mt-2 max-w-3xl text-sm leading-6 text-slate-600;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-wider text-slate-500;
+  }
+
+  .table-head-cell {
+    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500;
+  }
+
+  .table-cell {
+    @apply px-4 py-4 text-sm text-slate-600;
   }
 }

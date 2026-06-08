@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Award, Medal, Trophy } from "lucide-react";
 
 import { getTopGroupA } from "../api/scoreApi";
 import Loading from "../components/Loading";
@@ -99,6 +100,13 @@ export default function TopGroupAPage() {
   }, []);
 
   const rows = useMemo(() => normalizeRows(students), [students]);
+  const podium = rows.slice(0, 3);
+  const podiumIcons = [Trophy, Medal, Award];
+  const podiumStyles = [
+    "border-amber-200 bg-amber-50 text-amber-800",
+    "border-slate-200 bg-slate-50 text-slate-800",
+    "border-orange-200 bg-orange-50 text-orange-800",
+  ];
 
   return (
     <div className="page-shell">
@@ -110,7 +118,44 @@ export default function TopGroupAPage() {
         </p>
       </section>
 
+      {!isLoading && !error && podium.length > 0 ? (
+        <section className="mt-6 grid gap-4 md:grid-cols-3">
+          {podium.map((student, index) => {
+            const Icon = podiumIcons[index];
+
+            return (
+              <div
+                key={student.sbd}
+                className={`rounded-lg border p-5 shadow-soft ${podiumStyles[index]}`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold">Rank {index + 1}</p>
+                    <p className="mt-2 text-2xl font-semibold tracking-normal">
+                      {student.sbd}
+                    </p>
+                  </div>
+                  <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-white/70">
+                    <Icon className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                </div>
+                <p className="mt-4 text-sm font-medium">
+                  Group A Total: {formatScore(student.total)}
+                </p>
+              </div>
+            );
+          })}
+        </section>
+      ) : null}
+
       <section className="panel mt-6 overflow-hidden">
+        <div className="border-b border-slate-200 px-5 py-4">
+          <p className="eyebrow">Ranking</p>
+          <h2 className="mt-1 text-lg font-semibold tracking-normal text-slate-950">
+            Top 10 Group A Students
+          </h2>
+        </div>
+
         {isLoading ? (
           <div className="p-5">
             <Loading label="Loading top students..." />
@@ -128,22 +173,22 @@ export default function TopGroupAPage() {
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50">
                 <tr>
-                  <th className="w-20 px-4 py-3 text-left font-semibold text-slate-700">
+                  <th className="w-20 table-head-cell">
                     Rank
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">
+                  <th className="table-head-cell">
                     SBD
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-slate-700">
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Math
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-slate-700">
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Physics
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-slate-700">
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Chemistry
                   </th>
-                  <th className="px-4 py-3 text-right font-semibold text-slate-700">
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Group A Total
                   </th>
                 </tr>

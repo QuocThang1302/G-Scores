@@ -59,3 +59,40 @@ export interface TopGroupAStudent {
   groupAScore?: number | null;
   totalScore?: number | null;
 }
+
+export interface DashboardSummary {
+  examYear: number;
+  totalCandidates: number;
+}
+
+export interface SubjectAverage {
+  code: string;
+  name: string;
+  displayName?: string;
+  average: number | null;
+  candidateCount: number;
+  candidatePercentage?: number;
+}
+
+export interface MathScoreDistributionBucket {
+  score: number;
+  label: string;
+  lowerBound?: number;
+  upperBound?: number;
+  count: number;
+}
+
+export interface SubjectScoreDistribution {
+  code: string;
+  name: string;
+  displayName?: string;
+  candidateCount: number;
+  buckets: MathScoreDistributionBucket[];
+}
+
+export interface DashboardData {
+  summary: DashboardSummary;
+  subjectAverages: SubjectAverage[];
+  mathScoreDistribution: MathScoreDistributionBucket[];
+  subjectScoreDistributions?: SubjectScoreDistribution[];
+}

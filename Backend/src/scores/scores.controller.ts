@@ -15,6 +15,14 @@ export class ScoresController {
     };
   }
 
+  @Get("dashboard")
+  async getDashboard() {
+    return {
+      success: true,
+      data: await this.scoresService.getDashboard(),
+    };
+  }
+
   @Get("reports/top-group-a")
   async getTopGroupA() {
     return {

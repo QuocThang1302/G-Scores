@@ -9,6 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { BarChart3, Layers, TrendingDown, TrendingUp } from "lucide-react";
 
 import { getScoreLevelReport } from "../api/scoreApi";
 import Loading from "../components/Loading";
@@ -96,6 +97,39 @@ export default function ReportPage() {
   }, []);
 
   const chartData = useMemo(() => normalizeReports(reports), [reports]);
+  const totals = useMemo(
+    () =>
+      chartData.reduce(
+        (result, row) => ({
+          excellent: result.excellent + row.excellent,
+          good: result.good + row.good,
+          average: result.average + row.average,
+          poor: result.poor + row.poor,
+        }),
+        { excellent: 0, good: 0, average: 0, poor: 0 },
+      ),
+    [chartData],
+  );
+  const summaryCards = [
+    {
+      label: "Subjects",
+      value: chartData.length.toLocaleString(),
+      icon: Layers,
+      accent: "bg-slate-100 text-slate-700",
+    },
+    {
+      label: "Scores >= 8",
+      value: totals.excellent.toLocaleString(),
+      icon: TrendingUp,
+      accent: "bg-emerald-50 text-emerald-700",
+    },
+    {
+      label: "Scores < 4",
+      value: totals.poor.toLocaleString(),
+      icon: TrendingDown,
+      accent: "bg-rose-50 text-rose-700",
+    },
+  ];
 
   return (
     <div className="page-shell">
@@ -107,7 +141,48 @@ export default function ReportPage() {
         </p>
       </section>
 
+      {!isLoading && !error ? (
+        <section className="mt-6 grid gap-4 md:grid-cols-3">
+          {summaryCards.map((card) => {
+            const Icon = card.icon;
+
+            return (
+              <div key={card.label} className="panel p-5">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-slate-500">
+                      {card.label}
+                    </p>
+                    <p className="mt-2 text-2xl font-semibold tracking-normal text-slate-950">
+                      {card.value}
+                    </p>
+                  </div>
+                  <span
+                    className={`flex h-11 w-11 items-center justify-center rounded-lg ${card.accent}`}
+                  >
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </section>
+      ) : null}
+
       <section className="panel mt-6 p-5">
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="eyebrow">Distribution</p>
+            <h2 className="mt-1 text-lg font-semibold tracking-normal text-slate-950">
+              Score Level Overview
+            </h2>
+          </div>
+          <span className="inline-flex w-fit items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600">
+            <BarChart3 className="h-4 w-4" aria-hidden="true" />
+            Recharts
+          </span>
+        </div>
+
         {isLoading ? <Loading label="Loading reports..." /> : null}
 
         {!isLoading && error ? (
@@ -146,19 +221,19 @@ export default function ReportPage() {
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-4 py-3 text-left font-semibold text-slate-700">
+                    <th className="table-head-cell">
                       Subject
                     </th>
-                    <th className="px-4 py-3 text-right font-semibold text-slate-700">
+                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                       &gt;= 8
                     </th>
-                    <th className="px-4 py-3 text-right font-semibold text-slate-700">
+                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                       6 to &lt;8
                     </th>
-                    <th className="px-4 py-3 text-right font-semibold text-slate-700">
+                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                       4 to &lt;6
                     </th>
-                    <th className="px-4 py-3 text-right font-semibold text-slate-700">
+                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                       &lt; 4
                     </th>
                   </tr>

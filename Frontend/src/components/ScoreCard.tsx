@@ -7,6 +7,7 @@ type ScoreCardProps = {
 type SubjectRow = {
   label: string;
   value: number | null | undefined;
+  group: "Core" | "Science" | "Social";
 };
 
 const readScore = (
@@ -29,52 +30,90 @@ const formatScore = (value: number | string | null | undefined) => {
 
 export default function ScoreCard({ score }: ScoreCardProps) {
   const subjects: SubjectRow[] = [
-    { label: "Math", value: readScore(score, "toan") as number | null },
+    {
+      label: "Math",
+      value: readScore(score, "toan") as number | null,
+      group: "Core",
+    },
     {
       label: "Literature",
       value: readScore(score, "nguVan", "ngu_van") as number | null,
+      group: "Core",
     },
     {
       label: "Foreign Language",
       value: readScore(score, "ngoaiNgu", "ngoai_ngu") as number | null,
+      group: "Core",
     },
     {
       label: "Physics",
       value: readScore(score, "vatLi", "vat_li") as number | null,
+      group: "Science",
     },
     {
       label: "Chemistry",
       value: readScore(score, "hoaHoc", "hoa_hoc") as number | null,
+      group: "Science",
     },
     {
       label: "Biology",
       value: readScore(score, "sinhHoc", "sinh_hoc") as number | null,
+      group: "Science",
     },
     {
       label: "History",
       value: readScore(score, "lichSu", "lich_su") as number | null,
+      group: "Social",
     },
     {
       label: "Geography",
       value: readScore(score, "diaLi", "dia_li") as number | null,
+      group: "Social",
     },
     {
       label: "Civic Education",
       value: readScore(score, "gdcd") as number | null,
+      group: "Social",
     },
   ];
 
   const languageCode = readScore(score, "maNgoaiNgu", "ma_ngoai_ngu");
+  const availableScores = subjects.filter(
+    (subject) => subject.value !== null && subject.value !== undefined,
+  );
+  const averageScore =
+    availableScores.length > 0
+      ? availableScores.reduce(
+          (total, subject) => total + Number(subject.value),
+          0,
+        ) / availableScores.length
+      : null;
 
   return (
     <section className="panel overflow-hidden">
-      <div className="border-b border-slate-200 bg-slate-50 px-5 py-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+      <div className="border-b border-slate-200 bg-slate-950 px-5 py-5 text-white">
+        <p className="text-xs font-semibold uppercase tracking-wider text-teal-200">
           Student Number
         </p>
-        <h2 className="mt-1 text-2xl font-semibold tracking-normal text-slate-950">
-          {score.sbd}
-        </h2>
+        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <h2 className="text-3xl font-semibold tracking-normal">
+            {score.sbd}
+          </h2>
+          <div className="grid grid-cols-2 gap-3 sm:w-80">
+            <div className="rounded-lg bg-white/10 px-3 py-2">
+              <p className="text-xs text-slate-300">Subjects</p>
+              <p className="mt-1 text-lg font-semibold">
+                {availableScores.length}/9
+              </p>
+            </div>
+            <div className="rounded-lg bg-white/10 px-3 py-2">
+              <p className="text-xs text-slate-300">Average</p>
+              <p className="mt-1 text-lg font-semibold">
+                {averageScore === null ? "-" : averageScore.toFixed(2)}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-4 p-5 lg:grid-cols-[1fr_220px]">
@@ -82,10 +121,13 @@ export default function ScoreCard({ score }: ScoreCardProps) {
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-white">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-slate-700">
+                <th className="table-head-cell">
                   Subject
                 </th>
-                <th className="px-4 py-3 text-right font-semibold text-slate-700">
+                <th className="table-head-cell">
+                  Group
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Score
                 </th>
               </tr>
@@ -93,10 +135,15 @@ export default function ScoreCard({ score }: ScoreCardProps) {
             <tbody className="divide-y divide-slate-100 bg-white">
               {subjects.map((subject) => (
                 <tr key={subject.label} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="table-cell font-medium text-slate-900">
                     {subject.label}
                   </td>
-                  <td className="px-4 py-3 text-right font-semibold text-slate-950">
+                  <td className="table-cell">
+                    <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
+                      {subject.group}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 text-right text-sm font-semibold text-slate-950">
                     {formatScore(subject.value)}
                   </td>
                 </tr>

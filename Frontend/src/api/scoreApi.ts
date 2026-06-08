@@ -2,6 +2,7 @@ import axios from "axios";
 
 import type {
   ApiResponse,
+  DashboardData,
   ExamScore,
   ScoreLevelReport,
   TopGroupAStudent,
@@ -32,6 +33,13 @@ const unwrap = <T>(response: { data: ApiResponse<T> | T }) => {
 export const getScoreBySbd = async (sbd: string) => {
   const response = await scoreApi.get<ApiResponse<ExamScore>>(`/scores/${sbd}`);
   return unwrap<ExamScore>(response);
+};
+
+export const getDashboard = async () => {
+  const response = await scoreApi.get<ApiResponse<DashboardData>>(
+    "/scores/dashboard",
+  );
+  return unwrap<DashboardData>(response);
 };
 
 export const getScoreLevelReport = async () => {
