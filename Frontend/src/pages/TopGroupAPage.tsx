@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Award, Medal, Trophy } from "lucide-react";
 
 import { getTopGroupA } from "../api/scoreApi";
-import Loading from "../components/Loading";
+import { TopGroupASkeleton } from "../components/Skeleton";
 import type { TopGroupAStudent } from "../types/score.type";
 
 type TopGroupARow = {
@@ -118,6 +118,8 @@ export default function TopGroupAPage() {
         </p>
       </section>
 
+      {isLoading ? <TopGroupASkeleton /> : null}
+
       {!isLoading && !error && podium.length > 0 ? (
         <section className="mt-6 grid gap-4 md:grid-cols-3">
           {podium.map((student, index) => {
@@ -148,6 +150,7 @@ export default function TopGroupAPage() {
         </section>
       ) : null}
 
+      {!isLoading ? (
       <section className="panel mt-6 overflow-hidden">
         <div className="border-b border-slate-200 px-5 py-4">
           <p className="eyebrow">Ranking</p>
@@ -156,19 +159,13 @@ export default function TopGroupAPage() {
           </h2>
         </div>
 
-        {isLoading ? (
-          <div className="p-5">
-            <Loading label="Loading top students..." />
-          </div>
-        ) : null}
-
-        {!isLoading && error ? (
+        {error ? (
           <div className="m-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
             {error}
           </div>
         ) : null}
 
-        {!isLoading && !error ? (
+        {!error ? (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50">
@@ -223,6 +220,7 @@ export default function TopGroupAPage() {
           </div>
         ) : null}
       </section>
+      ) : null}
     </div>
   );
 }

@@ -12,7 +12,7 @@ import {
 import { BarChart3, Layers, TrendingDown, TrendingUp } from "lucide-react";
 
 import { getScoreLevelReport } from "../api/scoreApi";
-import Loading from "../components/Loading";
+import { ReportPageSkeleton } from "../components/Skeleton";
 import type { ScoreLevelReport } from "../types/score.type";
 
 type ReportChartRow = {
@@ -141,6 +141,8 @@ export default function ReportPage() {
         </p>
       </section>
 
+      {isLoading ? <ReportPageSkeleton /> : null}
+
       {!isLoading && !error ? (
         <section className="mt-6 grid gap-4 md:grid-cols-3">
           {summaryCards.map((card) => {
@@ -169,6 +171,7 @@ export default function ReportPage() {
         </section>
       ) : null}
 
+      {!isLoading ? (
       <section className="panel mt-6 p-5">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -183,15 +186,13 @@ export default function ReportPage() {
           </span>
         </div>
 
-        {isLoading ? <Loading label="Loading reports..." /> : null}
-
-        {!isLoading && error ? (
+        {error ? (
           <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
             {error}
           </div>
         ) : null}
 
-        {!isLoading && !error ? (
+        {!error ? (
           <>
             <div className="h-[420px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -264,6 +265,7 @@ export default function ReportPage() {
           </>
         ) : null}
       </section>
+      ) : null}
     </div>
   );
 }

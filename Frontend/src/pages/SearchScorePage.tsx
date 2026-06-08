@@ -3,8 +3,8 @@ import axios from "axios";
 import { FileSearch, Search, ShieldCheck } from "lucide-react";
 
 import { getScoreBySbd } from "../api/scoreApi";
-import Loading from "../components/Loading";
 import ScoreCard from "../components/ScoreCard";
+import { ScoreCardSkeleton } from "../components/Skeleton";
 import type { ExamScore } from "../types/score.type";
 
 export default function SearchScorePage() {
@@ -122,7 +122,7 @@ export default function SearchScorePage() {
       ) : null}
 
       <div className="mt-6">
-        {isLoading ? <Loading label="Searching scores..." /> : null}
+        {isLoading ? <ScoreCardSkeleton /> : null}
         {!isLoading && score ? <ScoreCard score={score} /> : null}
       </div>
     </div>

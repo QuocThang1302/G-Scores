@@ -35,6 +35,10 @@ type ScoreLevelsReportItem = {
   poor: number;
 };
 
+type ScoreLevelsAggregateRow = Record<string, number | null>;
+
+type ScoreLevelKey = "excellent" | "good" | "average" | "poor";
+
 type GroupAScoreRow = {
   sbd: string;
   toan: number;
@@ -50,6 +54,10 @@ type DashboardAggregateRow = Record<string, number | null> & {
 type ScoreDistributionRow = {
   score: number;
   count: number;
+};
+
+type ScoreDistributionBySubjectRow = ScoreDistributionRow & {
+  subject_code: string;
 };
 
 type SubjectAverageItem = {
@@ -182,6 +190,21 @@ const ADMISSION_GROUPS: readonly AdmissionGroupDefinition[] = [
 
 @Injectable()
 export class ScoresService {
+  private dashboardCache: DashboardReport | null = null;
+  private dashboardCacheGeneratedAt = 0;
+  private dashboardCachePromise: Promise<DashboardReport> | null = null;
+  private readonly dashboardCacheTtlMs = 10 * 60 * 1000;
+  private scoreLevelsReportCache: ScoreLevelsReportItem[] | null = null;
+  private scoreLevelsReportCacheGeneratedAt = 0;
+  private scoreLevelsReportCachePromise: Promise<
+    ScoreLevelsReportItem[]
+  > | null = null;
+  private readonly scoreLevelsReportCacheTtlMs = 10 * 60 * 1000;
+  private topGroupACache: GroupAScoreRow[] | null = null;
+  private topGroupACacheGeneratedAt = 0;
+  private topGroupACachePromise: Promise<GroupAScoreRow[]> | null = null;
+  private readonly topGroupACacheTtlMs = 10 * 60 * 1000;
+
   constructor(private readonly prisma: PrismaService) {}
 
   async findBySbd(sbd: string): Promise<SerializedExamScore> {
@@ -199,12 +222,61 @@ export class ScoresService {
   }
 
   async getScoreLevelsReport(): Promise<ScoreLevelsReportItem[]> {
-    return Promise.all(
-      SUBJECTS.map(async (subject) => this.getSubjectScoreLevels(subject)),
-    );
+    const now = Date.now();
+
+    if (
+      this.scoreLevelsReportCache &&
+      now - this.scoreLevelsReportCacheGeneratedAt <
+        this.scoreLevelsReportCacheTtlMs
+    ) {
+      return this.scoreLevelsReportCache;
+    }
+
+    if (this.scoreLevelsReportCachePromise) {
+      return this.scoreLevelsReportCachePromise;
+    }
+
+    this.scoreLevelsReportCachePromise = this.buildScoreLevelsReport()
+      .then((report) => {
+        this.scoreLevelsReportCache = report;
+        this.scoreLevelsReportCacheGeneratedAt = Date.now();
+        return report;
+      })
+      .finally(() => {
+        this.scoreLevelsReportCachePromise = null;
+      });
+
+    return this.scoreLevelsReportCachePromise;
   }
 
   async getDashboard(): Promise<DashboardReport> {
+    const now = Date.now();
+
+    if (
+      this.dashboardCache &&
+      now - this.dashboardCacheGeneratedAt < this.dashboardCacheTtlMs
+    ) {
+      return this.dashboardCache;
+    }
+
+    if (this.dashboardCachePromise) {
+      return this.dashboardCachePromise;
+    }
+
+    this.dashboardCachePromise = this.buildDashboard()
+      .then((report) => {
+        this.dashboardCache = report;
+        this.dashboardCacheGeneratedAt = Date.now();
+        return report;
+      })
+      .finally(() => {
+        this.dashboardCachePromise = null;
+      });
+
+    return this.dashboardCachePromise;
+  }
+
+  private async buildDashboard(): Promise<DashboardReport> {
     const [aggregateRows, subjectScoreDistributions] = await Promise.all([
       this.getDashboardAggregates(),
       this.getSubjectScoreDistributions(),
@@ -229,6 +301,33 @@ export class ScoresService {
   }
 
   async getTopGroupA(): Promise<GroupAScoreRow[]> {
+    const now = Date.now();
+
+    if (
+      this.topGroupACache &&
+      now - this.topGroupACacheGeneratedAt < this.topGroupACacheTtlMs
+    ) {
+      return this.topGroupACache;
+    }
+
+    if (this.topGroupACachePromise) {
+      return this.topGroupACachePromise;
+    }
+
+    this.topGroupACachePromise = this.buildTopGroupA()
+      .then((report) => {
+        this.topGroupACache = report;
+        this.topGroupACacheGeneratedAt = Date.now();
+        return report;
+      })
+      .finally(() => {
+        this.topGroupACachePromise = null;
+      });
+
+    return this.topGroupACachePromise;
+  }
+
+  private buildTopGroupA(): Promise<GroupAScoreRow[]> {
     return this.prisma.$queryRaw<GroupAScoreRow[]>`
       SELECT
         sbd,
@@ -240,7 +339,7 @@ export class ScoresService {
       WHERE toan IS NOT NULL
         AND vat_li IS NOT NULL
         AND hoa_hoc IS NOT NULL
-      ORDER BY tong_diem DESC
+      ORDER BY (toan + vat_li + hoa_hoc) DESC, sbd ASC
       LIMIT 10
     `;
   }
@@ -271,40 +370,64 @@ export class ScoresService {
     `;
   }
 
-  private getSubjectScoreDistributions(): Promise<SubjectScoreDistribution[]> {
-    return Promise.all(
-      SUBJECTS.map(async (subject) =>
-        this.getSubjectScoreDistribution(subject),
-      ),
-    );
-  }
+  private async getSubjectScoreDistributions(): Promise<
+    SubjectScoreDistribution[]
+  > {
+    const rows = await this.prisma.$queryRaw<ScoreDistributionBySubjectRow[]>`
+      WITH score_buckets AS (
+        SELECT
+          subject_scores.subject_code,
+          LEAST(
+            FLOOR(subject_scores.score * 2) / 2,
+            9.5::double precision
+          ) AS score
+        FROM exam_scores
+        CROSS JOIN LATERAL (
+          VALUES
+            ('toan', toan),
+            ('ngu_van', ngu_van),
+            ('ngoai_ngu', ngoai_ngu),
+            ('vat_li', vat_li),
+            ('hoa_hoc', hoa_hoc),
+            ('sinh_hoc', sinh_hoc),
+            ('lich_su', lich_su),
+            ('dia_li', dia_li),
+            ('gdcd', gdcd)
+        ) AS subject_scores(subject_code, score)
+        WHERE subject_scores.score IS NOT NULL
+      )
+      SELECT subject_code, score, COUNT(*)::int AS count
+      FROM score_buckets
+      GROUP BY subject_code, score
+      ORDER BY subject_code, score
+    `;
+    const rowsBySubject = new Map<string, ScoreDistributionRow[]>();
 
-  private async getSubjectScoreDistribution(
-    subject: Subject,
-  ): Promise<SubjectScoreDistribution> {
-    const column = Prisma.raw(subject.code);
-    const rows = await this.prisma.$queryRaw<ScoreDistributionRow[]>(
-      Prisma.sql`
-        WITH score_buckets AS (
-          SELECT LEAST(FLOOR(${column} * 2) / 2, 9.5::double precision) AS score
-          FROM exam_scores
-          WHERE ${column} IS NOT NULL
-        )
-        SELECT score, COUNT(*)::int AS count
-        FROM score_buckets
-        GROUP BY score
-        ORDER BY score
-      `,
-    );
-    const buckets = this.buildHalfPointBuckets(rows);
+    for (const row of rows) {
+      const subjectRows = rowsBySubject.get(row.subject_code) ?? [];
+      subjectRows.push({
+        score: row.score,
+        count: row.count,
+      });
+      rowsBySubject.set(row.subject_code, subjectRows);
+    }
 
-    return {
-      code: subject.code,
-      name: subject.name,
-      displayName: subject.displayName,
-      candidateCount: buckets.reduce((total, bucket) => total + bucket.count, 0),
-      buckets,
-    };
+    return SUBJECTS.map((subject) => {
+      const buckets = this.buildHalfPointBuckets(
+        rowsBySubject.get(subject.code) ?? [],
+      );
+
+      return {
+        code: subject.code,
+        name: subject.name,
+        displayName: subject.displayName,
+        candidateCount: buckets.reduce(
+          (total, bucket) => total + bucket.count,
+          0,
+        ),
+        buckets,
+      };
+    });
   }
 
   private toSubjectAverageItem(
@@ -352,40 +475,76 @@ export class ScoresService {
     });
   }
 
-  private async getSubjectScoreLevels(
-    subject: Subject,
-  ): Promise<ScoreLevelsReportItem> {
-    const [excellent, good, average, poor] = await this.prisma.$transaction([
-      this.prisma.examScore.count({
-        where: this.buildScoreWhere(subject, { gte: 8 }),
-      }),
-      this.prisma.examScore.count({
-        where: this.buildScoreWhere(subject, { gte: 6, lt: 8 }),
-      }),
-      this.prisma.examScore.count({
-        where: this.buildScoreWhere(subject, { gte: 4, lt: 6 }),
-      }),
-      this.prisma.examScore.count({
-        where: this.buildScoreWhere(subject, { lt: 4 }),
-      }),
-    ]);
+  private async buildScoreLevelsReport(): Promise<ScoreLevelsReportItem[]> {
+    const rows = await this.prisma.$queryRaw<ScoreLevelsAggregateRow[]>`
+      SELECT
+        COUNT(*) FILTER (WHERE toan >= 8)::int AS toan_excellent,
+        COUNT(*) FILTER (WHERE toan >= 6 AND toan < 8)::int AS toan_good,
+        COUNT(*) FILTER (WHERE toan >= 4 AND toan < 6)::int AS toan_average,
+        COUNT(*) FILTER (WHERE toan < 4)::int AS toan_poor,
 
-    return {
+        COUNT(*) FILTER (WHERE ngu_van >= 8)::int AS ngu_van_excellent,
+        COUNT(*) FILTER (WHERE ngu_van >= 6 AND ngu_van < 8)::int AS ngu_van_good,
+        COUNT(*) FILTER (WHERE ngu_van >= 4 AND ngu_van < 6)::int AS ngu_van_average,
+        COUNT(*) FILTER (WHERE ngu_van < 4)::int AS ngu_van_poor,
+
+        COUNT(*) FILTER (WHERE ngoai_ngu >= 8)::int AS ngoai_ngu_excellent,
+        COUNT(*) FILTER (WHERE ngoai_ngu >= 6 AND ngoai_ngu < 8)::int AS ngoai_ngu_good,
+        COUNT(*) FILTER (WHERE ngoai_ngu >= 4 AND ngoai_ngu < 6)::int AS ngoai_ngu_average,
+        COUNT(*) FILTER (WHERE ngoai_ngu < 4)::int AS ngoai_ngu_poor,
+
+        COUNT(*) FILTER (WHERE vat_li >= 8)::int AS vat_li_excellent,
+        COUNT(*) FILTER (WHERE vat_li >= 6 AND vat_li < 8)::int AS vat_li_good,
+        COUNT(*) FILTER (WHERE vat_li >= 4 AND vat_li < 6)::int AS vat_li_average,
+        COUNT(*) FILTER (WHERE vat_li < 4)::int AS vat_li_poor,
+
+        COUNT(*) FILTER (WHERE hoa_hoc >= 8)::int AS hoa_hoc_excellent,
+        COUNT(*) FILTER (WHERE hoa_hoc >= 6 AND hoa_hoc < 8)::int AS hoa_hoc_good,
+        COUNT(*) FILTER (WHERE hoa_hoc >= 4 AND hoa_hoc < 6)::int AS hoa_hoc_average,
+        COUNT(*) FILTER (WHERE hoa_hoc < 4)::int AS hoa_hoc_poor,
+
+        COUNT(*) FILTER (WHERE sinh_hoc >= 8)::int AS sinh_hoc_excellent,
+        COUNT(*) FILTER (WHERE sinh_hoc >= 6 AND sinh_hoc < 8)::int AS sinh_hoc_good,
+        COUNT(*) FILTER (WHERE sinh_hoc >= 4 AND sinh_hoc < 6)::int AS sinh_hoc_average,
+        COUNT(*) FILTER (WHERE sinh_hoc < 4)::int AS sinh_hoc_poor,
+
+        COUNT(*) FILTER (WHERE lich_su >= 8)::int AS lich_su_excellent,
+        COUNT(*) FILTER (WHERE lich_su >= 6 AND lich_su < 8)::int AS lich_su_good,
+        COUNT(*) FILTER (WHERE lich_su >= 4 AND lich_su < 6)::int AS lich_su_average,
+        COUNT(*) FILTER (WHERE lich_su < 4)::int AS lich_su_poor,
+
+        COUNT(*) FILTER (WHERE dia_li >= 8)::int AS dia_li_excellent,
+        COUNT(*) FILTER (WHERE dia_li >= 6 AND dia_li < 8)::int AS dia_li_good,
+        COUNT(*) FILTER (WHERE dia_li >= 4 AND dia_li < 6)::int AS dia_li_average,
+        COUNT(*) FILTER (WHERE dia_li < 4)::int AS dia_li_poor,
+
+        COUNT(*) FILTER (WHERE gdcd >= 8)::int AS gdcd_excellent,
+        COUNT(*) FILTER (WHERE gdcd >= 6 AND gdcd < 8)::int AS gdcd_good,
+        COUNT(*) FILTER (WHERE gdcd >= 4 AND gdcd < 6)::int AS gdcd_average,
+        COUNT(*) FILTER (WHERE gdcd < 4)::int AS gdcd_poor
+      FROM exam_scores
+    `;
+    const aggregate = rows[0] ?? {};
+
+    return SUBJECTS.map((subject) => ({
       subject: subject.name,
-      excellent,
-      good,
-      average,
-      poor,
-    };
+      excellent: this.readScoreLevelCount(
+        aggregate,
+        subject.code,
+        "excellent",
+      ),
+      good: this.readScoreLevelCount(aggregate, subject.code, "good"),
+      average: this.readScoreLevelCount(aggregate, subject.code, "average"),
+      poor: this.readScoreLevelCount(aggregate, subject.code, "poor"),
+    }));
   }
 
-  private buildScoreWhere(
-    subject: Subject,
-    filter: Prisma.FloatNullableFilter<"ExamScore">,
-  ): Prisma.ExamScoreWhereInput {
-    return {
-      [subject.scoreField]: filter,
-    };
+  private readScoreLevelCount(
+    aggregate: ScoreLevelsAggregateRow,
+    subjectCode: string,
+    level: ScoreLevelKey,
+  ): number {
+    return this.toNumber(aggregate[`${subjectCode}_${level}`]);
   }
 
   private toNumber(value: number | bigint | null | undefined): number {

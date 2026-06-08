@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 import { getDashboard } from "../api/scoreApi";
-import Loading from "../components/Loading";
+import { DashboardSkeleton } from "../components/Skeleton";
 import type {
   DashboardData,
   MathScoreDistributionBucket,
@@ -221,9 +221,7 @@ export default function HomePage() {
       ) : null}
 
       {isLoading ? (
-        <div className="panel p-6">
-          <Loading label="Loading dashboard..." />
-        </div>
+        <DashboardSkeleton />
       ) : null}
 
       {!isLoading ? (
