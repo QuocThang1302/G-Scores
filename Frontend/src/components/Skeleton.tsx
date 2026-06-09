@@ -131,7 +131,7 @@ export function ReportPageSkeleton() {
   );
 }
 
-export function TopGroupASkeleton() {
+export function TopGroupSkeleton() {
   return (
     <>
       <section className="mt-6 grid gap-4 md:grid-cols-3">

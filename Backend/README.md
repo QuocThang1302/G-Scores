@@ -113,9 +113,63 @@ Response data:
 `0 - 0.5` through `9.5 - 10`; the `9.5 - 10` bucket includes scores from
 `9.5` through `10`.
 
+### `GET /scores/reports/top-groups`
+
+Returns the supported admission groups.
+
+Success response:
+
+```json
+[
+  {
+    "code": "A00",
+    "name": "Math-Physics-Chemistry",
+    "subjects": [
+      { "field": "toan", "label": "Math" },
+      { "field": "vatLi", "label": "Physics" },
+      { "field": "hoaHoc", "label": "Chemistry" }
+    ]
+  }
+]
+```
+
+### `GET /scores/reports/top-groups/:groupCode`
+
+Returns the top 10 candidates for an admission group such as `A00`, `A01`,
+`B00`, `C00`, or `D01`.
+
+Success response:
+
+```json
+{
+  "group": {
+    "code": "A00",
+    "name": "Math-Physics-Chemistry",
+    "subjects": [
+      { "field": "toan", "label": "Math" },
+      { "field": "vatLi", "label": "Physics" },
+      { "field": "hoaHoc", "label": "Chemistry" }
+    ]
+  },
+  "students": [
+    {
+      "sbd": "01000001",
+      "subjects": [
+        { "field": "toan", "label": "Math", "score": 9.8 },
+        { "field": "vatLi", "label": "Physics", "score": 9.75 },
+        { "field": "hoaHoc", "label": "Chemistry", "score": 9.75 }
+      ],
+      "totalScore": 29.3
+    }
+  ]
+}
+```
+
+Candidates must have all three subject scores for the selected group.
+
 ### `GET /scores/reports/top-group-a`
 
-Returns the top 10 candidates in Group A.
+Legacy endpoint for the top 10 candidates in Group A00.
 
 Group A score:
 

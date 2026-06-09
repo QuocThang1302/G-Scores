@@ -27,6 +27,27 @@ type AdmissionGroupScore = {
   totalScore: number;
 };
 
+type AdmissionGroupOption = {
+  code: string;
+  name: string;
+  subjects: AdmissionGroupSubject[];
+};
+
+type TopAdmissionGroupSubjectScore = AdmissionGroupSubject & {
+  score: number;
+};
+
+type TopAdmissionGroupStudent = {
+  sbd: string;
+  subjects: TopAdmissionGroupSubjectScore[];
+  totalScore: number;
+};
+
+type TopAdmissionGroupReport = {
+  group: AdmissionGroupOption;
+  students: TopAdmissionGroupStudent[];
+};
+
 type ScoreLevelsReportItem = {
   subject: string;
   excellent: number;
@@ -45,6 +66,12 @@ type GroupAScoreRow = {
   vat_li: number;
   hoa_hoc: number;
   tong_diem: number;
+};
+
+type TopAdmissionGroupRow = {
+  sbd: string;
+  total_score: number;
+  [key: string]: number | string;
 };
 
 type DashboardAggregateRow = Record<string, number | null> & {
@@ -204,6 +231,15 @@ export class ScoresService {
   private topGroupACacheGeneratedAt = 0;
   private topGroupACachePromise: Promise<GroupAScoreRow[]> | null = null;
   private readonly topGroupACacheTtlMs = 10 * 60 * 1000;
+  private readonly topAdmissionGroupCache = new Map<
+    string,
+    { generatedAt: number; report: TopAdmissionGroupReport }
+  >();
+  private readonly topAdmissionGroupCachePromises = new Map<
+    string,
+    Promise<TopAdmissionGroupReport>
+  >();
+  private readonly topAdmissionGroupCacheTtlMs = 10 * 60 * 1000;
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -327,6 +363,48 @@ export class ScoresService {
     return this.topGroupACachePromise;
   }
 
+  getAdmissionGroups(): AdmissionGroupOption[] {
+    return ADMISSION_GROUPS.map((group) => this.toAdmissionGroupOption(group));
+  }
+
+  async getTopAdmissionGroup(
+    groupCode: string,
+  ): Promise<TopAdmissionGroupReport> {
+    const normalizedGroupCode = groupCode.trim().toUpperCase();
+    const cachedReport = this.topAdmissionGroupCache.get(normalizedGroupCode);
+    const now = Date.now();
+
+    if (
+      cachedReport &&
+      now - cachedReport.generatedAt < this.topAdmissionGroupCacheTtlMs
+    ) {
+      return cachedReport.report;
+    }
+
+    const pendingReport =
+      this.topAdmissionGroupCachePromises.get(normalizedGroupCode);
+
+    if (pendingReport) {
+      return pendingReport;
+    }
+
+    const reportPromise = this.buildTopAdmissionGroup(normalizedGroupCode)
+      .then((report) => {
+        this.topAdmissionGroupCache.set(normalizedGroupCode, {
+          generatedAt: Date.now(),
+          report,
+        });
+        return report;
+      })
+      .finally(() => {
+        this.topAdmissionGroupCachePromises.delete(normalizedGroupCode);
+      });
+
+    this.topAdmissionGroupCachePromises.set(normalizedGroupCode, reportPromise);
+
+    return reportPromise;
+  }
+
   private buildTopGroupA(): Promise<GroupAScoreRow[]> {
     return this.prisma.$queryRaw<GroupAScoreRow[]>`
       SELECT
@@ -342,6 +420,45 @@ export class ScoresService {
       ORDER BY (toan + vat_li + hoa_hoc) DESC, sbd ASC
       LIMIT 10
     `;
+  }
+
+  private async buildTopAdmissionGroup(
+    groupCode: string,
+  ): Promise<TopAdmissionGroupReport> {
+    const group = this.getAdmissionGroupDefinition(groupCode);
+    const subjectColumns = group.subjects.map((subject) =>
+      Prisma.raw(this.getScoreDbColumn(subject.field)),
+    );
+    const scoreSelections = subjectColumns.map((column, index) =>
+      Prisma.sql`${column} AS ${Prisma.raw(`subject_${index + 1}_score`)}`,
+    );
+    const notNullConditions = subjectColumns.map(
+      (column) => Prisma.sql`${column} IS NOT NULL`,
+    );
+    const totalExpression = Prisma.join(subjectColumns, " + ");
+
+    const rows = await this.prisma.$queryRaw<TopAdmissionGroupRow[]>(Prisma.sql`
+      SELECT
+        sbd,
+        ${Prisma.join(scoreSelections)},
+        (${totalExpression}) AS total_score
+      FROM exam_scores
+      WHERE ${Prisma.join(notNullConditions, " AND ")}
+      ORDER BY total_score DESC, sbd ASC
+      LIMIT 10
+    `);
+
+    return {
+      group: this.toAdmissionGroupOption(group),
+      students: rows.map((row) => ({
+        sbd: row.sbd,
+        subjects: group.subjects.map((subject, index) => ({
+          ...subject,
+          score: this.toNumber(row[`subject_${index + 1}_score`] as number),
+        })),
+        totalScore: this.roundTo(this.toNumber(row.total_score), 2),
+      })),
+    };
   }
 
   private getDashboardAggregates(): Promise<DashboardAggregateRow[]> {
@@ -581,6 +698,44 @@ export class ScoresService {
 
   private getScoreKey(score: number): string {
     return score.toFixed(1);
+  }
+
+  private toAdmissionGroupOption(
+    group: AdmissionGroupDefinition,
+  ): AdmissionGroupOption {
+    return {
+      code: group.code,
+      name: group.name,
+      subjects: group.subjects,
+    };
+  }
+
+  private getAdmissionGroupDefinition(
+    groupCode: string,
+  ): AdmissionGroupDefinition {
+    const group = ADMISSION_GROUPS.find((group) => group.code === groupCode);
+
+    if (!group) {
+      throw new NotFoundException(`No admission group found for ${groupCode}.`);
+    }
+
+    return group;
+  }
+
+  private getScoreDbColumn(field: ScoreField): string {
+    const columns: Record<ScoreField, string> = {
+      toan: "toan",
+      nguVan: "ngu_van",
+      ngoaiNgu: "ngoai_ngu",
+      vatLi: "vat_li",
+      hoaHoc: "hoa_hoc",
+      sinhHoc: "sinh_hoc",
+      lichSu: "lich_su",
+      diaLi: "dia_li",
+      gdcd: "gdcd",
+    };
+
+    return columns[field];
   }
 
   private getTopAdmissionGroups(score: ExamScore): AdmissionGroupScore[] {

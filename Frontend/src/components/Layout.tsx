@@ -17,7 +17,7 @@ const navItems = [
   { to: "/", label: "Dashboard", icon: Home },
   { to: "/search", label: "Search Scores", icon: Search },
   { to: "/reports", label: "Reports", icon: BarChart3 },
-  { to: "/top-group-a", label: "Top Group A", icon: Medal },
+  { to: "/top-group", label: "Top Group", icon: Medal },
 ];
 
 export default function Layout({ children }: LayoutProps) {

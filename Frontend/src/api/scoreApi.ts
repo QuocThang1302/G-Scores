@@ -1,11 +1,12 @@
 import axios from "axios";
 
 import type {
+  AdmissionGroupOption,
   ApiResponse,
   DashboardData,
   ExamScore,
   ScoreLevelReport,
-  TopGroupAStudent,
+  TopGroupReport,
 } from "../types/score.type";
 
 const scoreApi = axios.create({
@@ -50,12 +51,19 @@ export const getScoreLevelReport = async () => {
   return unwrap<ScoreLevelReport[]>(response);
 };
 
-export const getTopGroupA = async () => {
+export const getAdmissionGroups = async () => {
   const response =
-    await scoreApi.get<ApiResponse<TopGroupAStudent[]>>(
-      "/scores/reports/top-group-a",
+    await scoreApi.get<ApiResponse<AdmissionGroupOption[]>>(
+      "/scores/reports/top-groups",
     );
-  return unwrap<TopGroupAStudent[]>(response);
+  return unwrap<AdmissionGroupOption[]>(response);
+};
+
+export const getTopAdmissionGroup = async (groupCode: string) => {
+  const response = await scoreApi.get<ApiResponse<TopGroupReport>>(
+    `/scores/reports/top-groups/${encodeURIComponent(groupCode)}`,
+  );
+  return unwrap<TopGroupReport>(response);
 };
 
 export default scoreApi;

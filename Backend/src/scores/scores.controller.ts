@@ -31,6 +31,22 @@ export class ScoresController {
     };
   }
 
+  @Get("reports/top-groups")
+  getAdmissionGroups() {
+    return {
+      success: true,
+      data: this.scoresService.getAdmissionGroups(),
+    };
+  }
+
+  @Get("reports/top-groups/:groupCode")
+  async getTopAdmissionGroup(@Param("groupCode") groupCode: string) {
+    return {
+      success: true,
+      data: await this.scoresService.getTopAdmissionGroup(groupCode),
+    };
+  }
+
   @Get(":sbd")
   async findBySbd(@Param() params: SearchScoreDto) {
     return {

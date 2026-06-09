@@ -55,17 +55,30 @@ export interface ScoreLevelReport {
   score_lt_4?: number;
 }
 
-export interface TopGroupAStudent {
+export interface AdmissionGroupSubject {
+  field: string;
+  label: string;
+}
+
+export interface AdmissionGroupOption {
+  code: string;
+  name: string;
+  subjects: AdmissionGroupSubject[];
+}
+
+export interface TopGroupSubjectScore extends AdmissionGroupSubject {
+  score: number;
+}
+
+export interface TopGroupStudent {
   sbd: string;
-  toan?: number | null;
-  vatLi?: number | null;
-  vat_li?: number | null;
-  hoaHoc?: number | null;
-  hoa_hoc?: number | null;
-  tong_diem?: number | null;
-  totalGroupA?: number | null;
-  groupAScore?: number | null;
-  totalScore?: number | null;
+  subjects: TopGroupSubjectScore[];
+  totalScore: number;
+}
+
+export interface TopGroupReport {
+  group: AdmissionGroupOption;
+  students: TopGroupStudent[];
 }
 
 export interface DashboardSummary {
