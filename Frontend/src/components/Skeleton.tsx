@@ -210,9 +210,9 @@ export function ScoreCardSkeleton() {
           ))}
         </div>
 
-        <div className="rounded-lg border border-primary-border bg-primary-soft p-4">
-          <SkeletonBlock className="h-4 w-36 bg-primary-border/70" />
-          <SkeletonBlock className="mt-4 h-9 w-20 bg-primary-border/70" />
+        <div className="rounded-lg border border-border bg-surface-raised p-4">
+          <SkeletonBlock className="h-4 w-36 bg-border-strong/60" />
+          <SkeletonBlock className="mt-4 h-9 w-20 bg-border-strong/60" />
         </div>
       </div>
     </section>

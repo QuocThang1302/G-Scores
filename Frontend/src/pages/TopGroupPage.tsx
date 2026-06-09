@@ -104,11 +104,7 @@ export default function TopGroupPage() {
     report?.group.code === selectedGroupCode ? report.students : [];
   const podium = rows.slice(0, 3);
   const podiumIcons = [Trophy, Medal, Award];
-  const podiumStyles = [
-    "border-warning-border bg-warning-soft text-warning-text",
-    "border-border bg-surface-raised text-foreground",
-    "border-accent-border bg-accent-soft text-accent-text",
-  ];
+  const podiumStyle = "border-border bg-surface-raised text-foreground";
   const subjectLabels = useMemo(
     () => currentGroup?.subjects.map((subject) => subject.label) ?? [],
     [currentGroup],
@@ -183,7 +179,7 @@ export default function TopGroupPage() {
             return (
               <div
                 key={student.sbd}
-                className={`rounded-lg border p-5 shadow-soft ${podiumStyles[index]}`}
+                className={`rounded-lg border p-5 shadow-soft ${podiumStyle}`}
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>

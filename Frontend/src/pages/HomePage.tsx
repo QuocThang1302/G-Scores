@@ -29,8 +29,6 @@ type MetricCard = {
   value: string;
   detail: string;
   icon: typeof GraduationCap;
-  border: string;
-  iconClass: string;
 };
 
 type ScoreDistributionChartBucket = MathScoreDistributionBucket & {
@@ -188,32 +186,24 @@ export default function HomePage() {
       value: compactFormatter.format(dashboard.summary.totalCandidates),
       detail: `Nationwide ${dashboard.summary.examYear}`,
       icon: GraduationCap,
-      border: "border-t-accent",
-      iconClass: "icon-tile icon-tile-accent",
     },
     {
       label: "Math Average",
       value: formatAverage(math?.average),
       detail: `${formatCount(math?.candidateCount)} candidates`,
       icon: Calculator,
-      border: "border-t-warning",
-      iconClass: "icon-tile icon-tile-warning",
     },
     {
       label: "Literature Average",
       value: formatAverage(literature?.average),
       detail: "Required subject nationwide",
       icon: BookOpen,
-      border: "border-t-success",
-      iconClass: "icon-tile icon-tile-success",
     },
     {
       label: "Foreign Language Average",
       value: formatAverage(foreignLanguage?.average),
       detail: `${formatAverage(foreignLanguage?.candidatePercentage)}% attempted`,
       icon: Languages,
-      border: "border-t-primary",
-      iconClass: "icon-tile icon-tile-primary",
     },
   ];
 
@@ -275,7 +265,7 @@ export default function HomePage() {
               return (
                 <article
                   key={card.label}
-                  className={`panel border-t-4 ${card.border} p-5`}
+                  className="panel border-t-4 border-t-border-strong p-5"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
@@ -288,7 +278,7 @@ export default function HomePage() {
                       </p>
                     </div>
                     <span
-                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${card.iconClass}`}
+                      className="icon-tile icon-tile-neutral h-11 w-11 shrink-0"
                     >
                       <Icon className="h-6 w-6" aria-hidden="true" />
                     </span>

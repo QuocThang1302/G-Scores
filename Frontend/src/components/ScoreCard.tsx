@@ -181,11 +181,11 @@ export default function ScoreCard({ score }: ScoreCardProps) {
           </table>
         </div>
 
-        <div className="rounded-lg border border-primary-border bg-primary-soft p-4">
-          <p className="text-sm font-semibold text-primary-text">
+        <div className="rounded-lg border border-border bg-surface-raised p-4">
+          <p className="text-sm font-semibold text-foreground">
             Foreign Language Code
           </p>
-          <p className="mt-3 text-3xl font-semibold tracking-normal text-primary-text">
+          <p className="mt-3 text-3xl font-semibold tracking-normal text-foreground">
             {formatScore(languageCode)}
           </p>
         </div>
