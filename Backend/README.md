@@ -97,7 +97,7 @@ Response data:
   "mathScoreDistribution": [
     {
       "score": 0,
-      "label": "0",
+      "label": "0 - 0.5",
       "lowerBound": 0,
       "upperBound": 0.5,
       "count": 120
@@ -109,8 +109,9 @@ Response data:
 `subjectAverages` includes every subject. Null scores are ignored for
 `average` and `candidateCount`.
 
-`mathScoreDistribution` groups math scores into half-point buckets from `0` to
-`9.5`; the `9.5` bucket includes scores from `9.5` through `10`.
+`mathScoreDistribution` groups math scores into half-point ranges from
+`0 - 0.5` through `9.5 - 10`; the `9.5 - 10` bucket includes scores from
+`9.5` through `10`.
 
 ### `GET /scores/reports/top-group-a`
 

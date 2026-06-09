@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
 import {
-  Activity,
   BarChart3,
   ChevronRight,
-  Database,
   GraduationCap,
   Home,
   Medal,
@@ -74,19 +72,13 @@ export default function Layout({ children }: LayoutProps) {
               );
             })}
 
-            <div className="mt-auto rounded-lg border border-white/10 bg-white/[0.04] p-4">
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-800 text-teal-300">
-                  <Database className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-white">
-                    Backend API
-                  </p>
-                  <p className="mt-1 text-xs text-slate-400">
-                    localhost:3000
-                  </p>
-                </div>
+            <div className="mt-auto flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-500/15 text-teal-300">
+                <GraduationCap className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white">THPT 2024</p>
+                <p className="mt-0.5 text-xs text-slate-400">G-Scores</p>
               </div>
             </div>
           </nav>
@@ -109,10 +101,6 @@ export default function Layout({ children }: LayoutProps) {
               </div>
 
               <div className="hidden items-center gap-3 sm:flex">
-                <span className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
-                  <Activity className="h-4 w-4" aria-hidden="true" />
-                  API Target
-                </span>
                 <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-sm font-semibold text-white">
                   GS
                 </span>

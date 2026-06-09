@@ -196,7 +196,10 @@ export default function ReportPage() {
           <>
             <div className="h-[420px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 16, right: 12 }}>
+                <BarChart
+                  data={chartData}
+                  margin={{ top: 16, right: 12, left: 24 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis
                     dataKey="subject"
@@ -207,7 +210,7 @@ export default function ReportPage() {
                     textAnchor="end"
                     height={80}
                   />
-                  <YAxis tickLine={false} axisLine={false} />
+                  <YAxis tickLine={false} axisLine={false} width={72} />
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="excellent" name=">= 8" fill="#0f766e" />

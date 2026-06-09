@@ -33,6 +33,10 @@ type MetricCard = {
   iconClass: string;
 };
 
+type ScoreDistributionChartBucket = MathScoreDistributionBucket & {
+  rangeLabel: string;
+};
+
 const numberFormatter = new Intl.NumberFormat("en-US");
 const compactFormatter = new Intl.NumberFormat("en-US", {
   notation: "compact",
@@ -54,6 +58,21 @@ const formatAverage = (value: number | null | undefined) =>
 
 const formatCount = (value: number | null | undefined) =>
   numberFormatter.format(value ?? 0);
+
+const formatScoreRangeValue = (value: number) => value.toString();
+
+const getScoreRangeLabel = (bucket: MathScoreDistributionBucket) => {
+  if (
+    typeof bucket.lowerBound === "number" &&
+    typeof bucket.upperBound === "number"
+  ) {
+    return `${formatScoreRangeValue(bucket.lowerBound)} - ${formatScoreRangeValue(
+      bucket.upperBound,
+    )}`;
+  }
+
+  return bucket.label;
+};
 
 const getSubjectByCode = (
   subjects: SubjectAverage[],
@@ -203,13 +222,22 @@ export default function HomePage() {
   const selectedCandidateCount =
     selectedDistribution?.candidateCount ?? selectedSubject?.candidateCount ?? 0;
 
+  const chartBuckets = useMemo<ScoreDistributionChartBucket[]>(
+    () =>
+      selectedBuckets.map((bucket) => ({
+        ...bucket,
+        rangeLabel: getScoreRangeLabel(bucket),
+      })),
+    [selectedBuckets],
+  );
+
   const maxSelectedBucket = useMemo(
     () =>
       Math.max(
-        ...selectedBuckets.map((bucket) => bucket.count),
+        ...chartBuckets.map((bucket) => bucket.count),
         0,
       ),
-    [selectedBuckets],
+    [chartBuckets],
   );
 
   return (
@@ -286,18 +314,21 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="h-[360px] px-3 py-5 sm:px-5">
+              <div className="h-[440px] px-3 py-5 sm:px-5">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={selectedBuckets}
-                    margin={{ top: 8, right: 12, left: 0, bottom: 8 }}
+                    data={chartBuckets}
+                    margin={{ top: 8, right: 12, left: 0, bottom: 48 }}
                   >
                     <CartesianGrid stroke="#eef2f7" vertical={false} />
                     <XAxis
-                      dataKey="label"
+                      dataKey="rangeLabel"
                       tickLine={false}
                       axisLine={false}
                       interval={0}
+                      angle={-35}
+                      textAnchor="end"
+                      height={64}
                       tick={{ fontSize: 11, fill: "#94a3b8" }}
                     />
                     <YAxis
@@ -317,12 +348,12 @@ export default function HomePage() {
                         formatCount(Number(value)),
                         "Candidates",
                       ]}
-                      labelFormatter={(label) => `Score ${label}`}
+                      labelFormatter={(label) => `Score range ${label}`}
                     />
                     <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                      {selectedBuckets.map((bucket) => (
+                      {chartBuckets.map((bucket) => (
                         <Cell
-                          key={bucket.label}
+                          key={`${bucket.score}-${bucket.rangeLabel}`}
                           fill={getScoreColor(bucket.score)}
                           opacity={
                             maxSelectedBucket > 0 && bucket.count === 0

@@ -467,12 +467,22 @@ export class ScoresService {
 
       return {
         score,
-        label: score.toString(),
+        label: this.formatScoreRangeLabel(score, upperBound),
         lowerBound: score,
         upperBound,
         count: countsByScore.get(this.getScoreKey(score)) ?? 0,
       };
     });
+  }
+
+  private formatScoreRangeLabel(lowerBound: number, upperBound: number): string {
+    return `${this.formatScoreLabel(lowerBound)} - ${this.formatScoreLabel(
+      upperBound,
+    )}`;
+  }
+
+  private formatScoreLabel(score: number): string {
+    return score.toString();
   }
 
   private async buildScoreLevelsReport(): Promise<ScoreLevelsReportItem[]> {
