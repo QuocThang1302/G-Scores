@@ -105,9 +105,9 @@ export default function TopGroupPage() {
   const podium = rows.slice(0, 3);
   const podiumIcons = [Trophy, Medal, Award];
   const podiumStyles = [
-    "border-amber-200 bg-amber-50 text-amber-800",
-    "border-slate-200 bg-slate-50 text-slate-800",
-    "border-orange-200 bg-orange-50 text-orange-800",
+    "border-warning-border bg-warning-soft text-warning-text",
+    "border-border bg-surface-raised text-foreground",
+    "border-accent-border bg-accent-soft text-accent-text",
   ];
   const subjectLabels = useMemo(
     () => currentGroup?.subjects.map((subject) => subject.label) ?? [],
@@ -127,12 +127,12 @@ export default function TopGroupPage() {
       <section className="panel mt-6 p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+            <span className="icon-tile icon-tile-primary h-11 w-11">
               <Medal className="h-5 w-5" aria-hidden="true" />
             </span>
             <div>
               <p className="eyebrow">Admission Group</p>
-              <h2 className="text-lg font-semibold tracking-normal text-slate-950">
+              <h2 className="text-lg font-semibold tracking-normal text-foreground">
                 {currentGroup
                   ? `${currentGroup.code} - ${currentGroup.name}`
                   : selectedGroupCode}
@@ -144,7 +144,7 @@ export default function TopGroupPage() {
             value={selectedGroupCode}
             onChange={(event) => setSelectedGroupCode(event.target.value)}
             disabled={isLoadingGroups || groups.length === 0}
-            className="h-11 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 lg:min-w-72"
+            className="app-select h-11 lg:min-w-72"
             aria-label="Select admission group"
           >
             {groups.length > 0 ? (
@@ -164,7 +164,7 @@ export default function TopGroupPage() {
             {currentGroup.subjects.map((subject) => (
               <span
                 key={subject.field}
-                className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600"
+                className="badge-muted"
               >
                 {subject.label}
               </span>
@@ -192,7 +192,7 @@ export default function TopGroupPage() {
                       {student.sbd}
                     </p>
                   </div>
-                  <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-white/70">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-inverse/70">
                     <Icon className="h-6 w-6" aria-hidden="true" />
                   </span>
                 </div>
@@ -208,60 +208,60 @@ export default function TopGroupPage() {
 
       {!isLoadingReport ? (
         <section className="panel mt-6 overflow-hidden">
-          <div className="border-b border-slate-200 px-5 py-4">
+          <div className="border-b border-border px-5 py-4">
             <p className="eyebrow">Ranking</p>
-            <h2 className="mt-1 text-lg font-semibold tracking-normal text-slate-950">
+            <h2 className="mt-1 text-lg font-semibold tracking-normal text-foreground">
               Top 10 {currentGroup?.code ?? selectedGroupCode} Students
             </h2>
           </div>
 
           {error ? (
-            <div className="m-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+            <div className="alert-danger m-5">
               {error}
             </div>
           ) : null}
 
           {!error ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50">
+              <table className="min-w-full divide-y divide-border text-sm">
+                <thead className="bg-surface-raised">
                   <tr>
                     <th className="w-20 table-head-cell">Rank</th>
                     <th className="table-head-cell">SBD</th>
                     {subjectLabels.map((label) => (
                       <th
                         key={label}
-                        className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500"
+                        className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle"
                       >
                         {label}
                       </th>
                     ))}
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
                       {currentGroup?.code ?? selectedGroupCode} Total
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white">
+                <tbody className="divide-y divide-border-muted bg-surface">
                   {rows.length > 0 ? (
                     rows.map((row, index) => (
-                      <tr key={row.sbd} className="hover:bg-slate-50">
+                      <tr key={row.sbd} className="hover:bg-surface-raised">
                         <td className="px-4 py-4">
-                          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-sm font-semibold text-teal-700">
+                          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary-text">
                             {index + 1}
                           </span>
                         </td>
-                        <td className="px-4 py-4 font-semibold text-slate-950">
+                        <td className="px-4 py-4 font-semibold text-foreground">
                           {row.sbd}
                         </td>
                         {row.subjects.map((subject) => (
                           <td
                             key={subject.field}
-                            className="px-4 py-4 text-right text-slate-600"
+                            className="px-4 py-4 text-right text-muted"
                           >
                             {formatScore(subject.score)}
                           </td>
                         ))}
-                        <td className="px-4 py-4 text-right text-base font-semibold text-slate-950">
+                        <td className="px-4 py-4 text-right text-base font-semibold text-foreground">
                           {formatScore(row.totalScore)}
                         </td>
                       </tr>
@@ -270,7 +270,7 @@ export default function TopGroupPage() {
                     <tr>
                       <td
                         colSpan={totalColumnCount}
-                        className="px-4 py-8 text-center text-sm font-medium text-slate-500"
+                        className="px-4 py-8 text-center text-sm font-medium text-subtle"
                       >
                         No students found for this group.
                       </td>

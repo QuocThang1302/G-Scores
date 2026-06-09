@@ -61,6 +61,24 @@ const normalizeReports = (reports: ScoreLevelReport[]): ReportChartRow[] =>
     poor: readNumber(item, ["poor", "lessThan4", "score_lt_4"]),
   }));
 
+const cssRgb = (variableName: string) => `rgb(var(${variableName}))`;
+const chartAxisTick = {
+  fontSize: 12,
+  fill: cssRgb("--color-subtle"),
+};
+const chartTooltipContentStyle = {
+  backgroundColor: cssRgb("--color-surface"),
+  border: `1px solid ${cssRgb("--color-border")}`,
+  borderRadius: 8,
+  color: cssRgb("--color-foreground"),
+};
+const chartTooltipLabelStyle = {
+  color: cssRgb("--color-foreground"),
+};
+const chartTooltipItemStyle = {
+  color: cssRgb("--color-muted"),
+};
+
 export default function ReportPage() {
   const [reports, setReports] = useState<ScoreLevelReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -115,19 +133,19 @@ export default function ReportPage() {
       label: "Subjects",
       value: chartData.length.toLocaleString(),
       icon: Layers,
-      accent: "bg-slate-100 text-slate-700",
+      accent: "icon-tile icon-tile-neutral",
     },
     {
       label: "Scores >= 8",
       value: totals.excellent.toLocaleString(),
       icon: TrendingUp,
-      accent: "bg-emerald-50 text-emerald-700",
+      accent: "icon-tile icon-tile-success",
     },
     {
       label: "Scores < 4",
       value: totals.poor.toLocaleString(),
       icon: TrendingDown,
-      accent: "bg-rose-50 text-rose-700",
+      accent: "icon-tile icon-tile-danger",
     },
   ];
 
@@ -152,15 +170,15 @@ export default function ReportPage() {
               <div key={card.label} className="panel p-5">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm font-medium text-slate-500">
+                    <p className="text-sm font-medium text-subtle">
                       {card.label}
                     </p>
-                    <p className="mt-2 text-2xl font-semibold tracking-normal text-slate-950">
+                    <p className="mt-2 text-2xl font-semibold tracking-normal text-foreground">
                       {card.value}
                     </p>
                   </div>
                   <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-lg ${card.accent}`}
+                    className={`h-11 w-11 ${card.accent}`}
                   >
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </span>
@@ -176,18 +194,18 @@ export default function ReportPage() {
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="eyebrow">Distribution</p>
-            <h2 className="mt-1 text-lg font-semibold tracking-normal text-slate-950">
+            <h2 className="mt-1 text-lg font-semibold tracking-normal text-foreground">
               Score Level Overview
             </h2>
           </div>
-          <span className="inline-flex w-fit items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600">
+          <span className="inline-flex w-fit items-center gap-2 rounded-lg bg-surface-muted px-3 py-2 text-xs font-semibold text-muted">
             <BarChart3 className="h-4 w-4" aria-hidden="true" />
             Recharts
           </span>
         </div>
 
         {error ? (
-          <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+          <div className="alert-danger">
             {error}
           </div>
         ) : null}
@@ -200,7 +218,11 @@ export default function ReportPage() {
                   data={chartData}
                   margin={{ top: 16, right: 12, left: 24 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <CartesianGrid
+                    stroke={cssRgb("--color-chart-grid")}
+                    strokeDasharray="3 3"
+                    vertical={false}
+                  />
                   <XAxis
                     dataKey="subject"
                     tickLine={false}
@@ -209,55 +231,81 @@ export default function ReportPage() {
                     angle={-20}
                     textAnchor="end"
                     height={80}
+                    tick={chartAxisTick}
                   />
-                  <YAxis tickLine={false} axisLine={false} width={72} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="excellent" name=">= 8" fill="#0f766e" />
-                  <Bar dataKey="good" name="6 to <8" fill="#2563eb" />
-                  <Bar dataKey="average" name="4 to <6" fill="#f59e0b" />
-                  <Bar dataKey="poor" name="< 4" fill="#e11d48" />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    width={72}
+                    tick={chartAxisTick}
+                  />
+                  <Tooltip
+                    contentStyle={chartTooltipContentStyle}
+                    itemStyle={chartTooltipItemStyle}
+                    labelStyle={chartTooltipLabelStyle}
+                  />
+                  <Legend wrapperStyle={{ color: cssRgb("--color-muted") }} />
+                  <Bar
+                    dataKey="excellent"
+                    name=">= 8"
+                    fill={cssRgb("--color-primary")}
+                  />
+                  <Bar
+                    dataKey="good"
+                    name="6 to <8"
+                    fill={cssRgb("--color-accent")}
+                  />
+                  <Bar
+                    dataKey="average"
+                    name="4 to <6"
+                    fill={cssRgb("--color-warning")}
+                  />
+                  <Bar
+                    dataKey="poor"
+                    name="< 4"
+                    fill={cssRgb("--color-danger")}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
-            <div className="mt-6 overflow-hidden rounded-lg border border-slate-200">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50">
+            <div className="mt-6 overflow-hidden rounded-lg border border-border">
+              <table className="min-w-full divide-y divide-border text-sm">
+                <thead className="bg-surface-raised">
                   <tr>
                     <th className="table-head-cell">
                       Subject
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
                       &gt;= 8
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
                       6 to &lt;8
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
                       4 to &lt;6
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
                       &lt; 4
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white">
+                <tbody className="divide-y divide-border-muted bg-surface">
                   {chartData.map((row) => (
-                    <tr key={row.subject} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 font-medium text-slate-900">
+                    <tr key={row.subject} className="hover:bg-surface-raised">
+                      <td className="px-4 py-3 font-medium text-foreground">
                         {row.subject}
                       </td>
-                      <td className="px-4 py-3 text-right text-slate-600">
+                      <td className="px-4 py-3 text-right text-muted">
                         {row.excellent.toLocaleString()}
                       </td>
-                      <td className="px-4 py-3 text-right text-slate-600">
+                      <td className="px-4 py-3 text-right text-muted">
                         {row.good.toLocaleString()}
                       </td>
-                      <td className="px-4 py-3 text-right text-slate-600">
+                      <td className="px-4 py-3 text-right text-muted">
                         {row.average.toLocaleString()}
                       </td>
-                      <td className="px-4 py-3 text-right text-slate-600">
+                      <td className="px-4 py-3 text-right text-muted">
                         {row.poor.toLocaleString()}
                       </td>
                     </tr>

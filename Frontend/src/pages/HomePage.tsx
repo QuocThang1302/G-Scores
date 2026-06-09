@@ -60,6 +60,20 @@ const formatCount = (value: number | null | undefined) =>
   numberFormatter.format(value ?? 0);
 
 const formatScoreRangeValue = (value: number) => value.toString();
+const cssRgb = (variableName: string) => `rgb(var(${variableName}))`;
+const chartTick = { fontSize: 11, fill: cssRgb("--color-subtle") };
+const chartTooltipContentStyle = {
+  backgroundColor: cssRgb("--color-surface"),
+  border: `1px solid ${cssRgb("--color-border")}`,
+  borderRadius: 8,
+  color: cssRgb("--color-foreground"),
+};
+const chartTooltipLabelStyle = {
+  color: cssRgb("--color-foreground"),
+};
+const chartTooltipItemStyle = {
+  color: cssRgb("--color-muted"),
+};
 
 const getScoreRangeLabel = (bucket: MathScoreDistributionBucket) => {
   if (
@@ -82,34 +96,34 @@ const getSubjectByCode = (
 
 const getScoreColor = (score: number) => {
   if (score >= 8) {
-    return "#22c55e";
+    return cssRgb("--color-score-high");
   }
 
   if (score >= 6) {
-    return "#f97316";
+    return cssRgb("--color-score-mid");
   }
 
   if (score >= 4) {
-    return "#fb7185";
+    return cssRgb("--color-score-low");
   }
 
-  return "#fca5a5";
+  return cssRgb("--color-score-poor");
 };
 
 const getAverageColor = (average: number | null) => {
   if (average === null) {
-    return "bg-slate-300";
+    return "bg-score-empty";
   }
 
   if (average >= 8) {
-    return "bg-emerald-500";
+    return "bg-score-high";
   }
 
   if (average >= 6) {
-    return "bg-orange-500";
+    return "bg-score-mid";
   }
 
-  return "bg-rose-500";
+  return "bg-score-low";
 };
 
 export default function HomePage() {
@@ -174,32 +188,32 @@ export default function HomePage() {
       value: compactFormatter.format(dashboard.summary.totalCandidates),
       detail: `Nationwide ${dashboard.summary.examYear}`,
       icon: GraduationCap,
-      border: "border-t-blue-600",
-      iconClass: "bg-blue-50 text-blue-600",
+      border: "border-t-accent",
+      iconClass: "icon-tile icon-tile-accent",
     },
     {
       label: "Math Average",
       value: formatAverage(math?.average),
       detail: `${formatCount(math?.candidateCount)} candidates`,
       icon: Calculator,
-      border: "border-t-orange-500",
-      iconClass: "bg-orange-50 text-orange-600",
+      border: "border-t-warning",
+      iconClass: "icon-tile icon-tile-warning",
     },
     {
       label: "Literature Average",
       value: formatAverage(literature?.average),
       detail: "Required subject nationwide",
       icon: BookOpen,
-      border: "border-t-emerald-500",
-      iconClass: "bg-emerald-50 text-emerald-600",
+      border: "border-t-success",
+      iconClass: "icon-tile icon-tile-success",
     },
     {
       label: "Foreign Language Average",
       value: formatAverage(foreignLanguage?.average),
       detail: `${formatAverage(foreignLanguage?.candidatePercentage)}% attempted`,
       icon: Languages,
-      border: "border-t-cyan-500",
-      iconClass: "bg-cyan-50 text-cyan-600",
+      border: "border-t-primary",
+      iconClass: "icon-tile icon-tile-primary",
     },
   ];
 
@@ -243,7 +257,7 @@ export default function HomePage() {
   return (
     <div className="page-shell">
       {error ? (
-        <div className="mb-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+        <div className="alert-danger mb-6">
           {error}
         </div>
       ) : null}
@@ -266,10 +280,10 @@ export default function HomePage() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="eyebrow">{card.label}</p>
-                      <p className="mt-3 text-3xl font-semibold tracking-normal text-slate-950">
+                      <p className="mt-3 text-3xl font-semibold tracking-normal text-foreground">
                         {card.value}
                       </p>
-                      <p className="mt-2 text-sm text-slate-500">
+                      <p className="mt-2 text-sm text-subtle">
                         {card.detail}
                       </p>
                     </div>
@@ -286,10 +300,10 @@ export default function HomePage() {
 
           <section className="mt-6 grid gap-4 xl:grid-cols-[1fr_0.95fr]">
             <article className="panel overflow-hidden">
-              <div className="flex flex-col gap-4 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-4 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="eyebrow">Score Distribution</p>
-                  <h2 className="mt-1 text-lg font-semibold tracking-normal text-slate-950">
+                  <h2 className="mt-1 text-lg font-semibold tracking-normal text-foreground">
                     {selectedSubject?.name ?? "Subject"} Score Distribution
                   </h2>
                 </div>
@@ -299,7 +313,7 @@ export default function HomePage() {
                     onChange={(event) =>
                       setSelectedSubjectCode(event.target.value)
                     }
-                    className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    className="app-select h-10"
                     aria-label="Select subject for score distribution"
                   >
                     {dashboard.subjectAverages.map((subject) => (
@@ -308,7 +322,7 @@ export default function HomePage() {
                       </option>
                     ))}
                   </select>
-                  <span className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700">
+                  <span className="rounded-lg bg-accent-soft px-3 py-2 text-xs font-semibold text-accent-text">
                     {formatCount(selectedCandidateCount)} candidates
                   </span>
                 </div>
@@ -320,7 +334,10 @@ export default function HomePage() {
                     data={chartBuckets}
                     margin={{ top: 8, right: 12, left: 0, bottom: 48 }}
                   >
-                    <CartesianGrid stroke="#eef2f7" vertical={false} />
+                    <CartesianGrid
+                      stroke={cssRgb("--color-chart-grid")}
+                      vertical={false}
+                    />
                     <XAxis
                       dataKey="rangeLabel"
                       tickLine={false}
@@ -329,13 +346,13 @@ export default function HomePage() {
                       angle={-35}
                       textAnchor="end"
                       height={64}
-                      tick={{ fontSize: 11, fill: "#94a3b8" }}
+                      tick={chartTick}
                     />
                     <YAxis
                       tickLine={false}
                       axisLine={false}
                       width={48}
-                      tick={{ fontSize: 11, fill: "#94a3b8" }}
+                      tick={chartTick}
                       tickFormatter={(value) =>
                         Number(value) >= 1000
                           ? `${Math.round(Number(value) / 1000)}k`
@@ -343,7 +360,13 @@ export default function HomePage() {
                       }
                     />
                     <Tooltip
-                      cursor={{ fill: "rgba(15, 23, 42, 0.04)" }}
+                      contentStyle={chartTooltipContentStyle}
+                      itemStyle={chartTooltipItemStyle}
+                      labelStyle={chartTooltipLabelStyle}
+                      cursor={{
+                        fill: cssRgb("--color-chart-cursor"),
+                        opacity: 0.06,
+                      }}
                       formatter={(value) => [
                         formatCount(Number(value)),
                         "Candidates",
@@ -369,14 +392,14 @@ export default function HomePage() {
             </article>
 
             <article className="panel overflow-hidden">
-              <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
+              <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4">
                 <div>
                   <p className="eyebrow">Nationwide</p>
-                  <h2 className="mt-1 text-lg font-semibold tracking-normal text-slate-950">
+                  <h2 className="mt-1 text-lg font-semibold tracking-normal text-foreground">
                     Subject Averages
                   </h2>
                 </div>
-                <span className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600">
+                <span className="badge-muted">
                   {dashboard.summary.examYear}
                 </span>
               </div>
@@ -392,14 +415,14 @@ export default function HomePage() {
                       className="grid items-center gap-3 sm:grid-cols-[128px_1fr_56px]"
                     >
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-slate-800">
+                        <p className="truncate text-sm font-semibold text-foreground">
                           {subject.name}
                         </p>
-                        <p className="mt-0.5 text-xs text-slate-400">
+                        <p className="mt-0.5 text-xs text-subtle">
                           {formatCount(subject.candidateCount)}
                         </p>
                       </div>
-                      <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                      <div className="h-2.5 overflow-hidden rounded-full bg-surface-muted">
                         <div
                           className={`h-full rounded-full ${getAverageColor(
                             subject.average,
@@ -407,7 +430,7 @@ export default function HomePage() {
                           style={{ width: `${width}%` }}
                         />
                       </div>
-                      <p className="text-right text-sm font-semibold text-blue-900">
+                      <p className="text-right text-sm font-semibold text-accent-text">
                         {formatAverage(subject.average)}
                       </p>
                     </div>

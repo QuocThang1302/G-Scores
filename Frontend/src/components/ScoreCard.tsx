@@ -99,8 +99,8 @@ export default function ScoreCard({ score }: ScoreCardProps) {
 
   return (
     <section className="panel overflow-hidden">
-      <div className="border-b border-blue-700 bg-gradient-to-r from-blue-950 via-blue-800 to-sky-500 px-5 py-5 text-white">
-        <p className="text-xs font-semibold uppercase tracking-wider text-teal-200">
+      <div className="score-hero border-b border-divider-strong px-5 py-5">
+        <p className="score-hero-muted text-xs font-semibold uppercase tracking-wider">
           Student Number
         </p>
         <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -112,15 +112,15 @@ export default function ScoreCard({ score }: ScoreCardProps) {
               {topAdmissionGroups.map((group) => (
                 <div
                   key={group.code}
-                  className="rounded-lg border border-white/20 bg-white/10 px-3 py-3 text-center shadow-sm"
+                  className="score-hero-tile rounded-lg px-3 py-3 text-center shadow-sm"
                 >
-                  <p className="text-xs font-semibold text-amber-300">
+                  <p className="text-xs font-semibold">
                     {group.code}
                   </p>
                   <p className="mt-1 text-2xl font-semibold tracking-normal">
                     {formatScore(group.totalScore)}
                   </p>
-                  <p className="mt-1 truncate text-xs text-slate-200">
+                  <p className="score-hero-muted mt-1 truncate text-xs">
                     {group.name}
                   </p>
                 </div>
@@ -128,14 +128,14 @@ export default function ScoreCard({ score }: ScoreCardProps) {
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:w-80">
-              <div className="rounded-lg bg-white/10 px-3 py-2">
-                <p className="text-xs text-slate-300">Subjects</p>
+              <div className="score-hero-tile rounded-lg px-3 py-2">
+                <p className="score-hero-muted text-xs">Subjects</p>
                 <p className="mt-1 text-lg font-semibold">
                   {availableScores.length}/9
                 </p>
               </div>
-              <div className="rounded-lg bg-white/10 px-3 py-2">
-                <p className="text-xs text-slate-300">Average</p>
+              <div className="score-hero-tile rounded-lg px-3 py-2">
+                <p className="score-hero-muted text-xs">Average</p>
                 <p className="mt-1 text-lg font-semibold">
                   {averageScore === null ? "-" : averageScore.toFixed(2)}
                 </p>
@@ -146,9 +146,9 @@ export default function ScoreCard({ score }: ScoreCardProps) {
       </div>
 
       <div className="grid gap-4 p-5 lg:grid-cols-[1fr_220px]">
-        <div className="overflow-hidden rounded-lg border border-slate-200">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-white">
+        <div className="overflow-hidden rounded-lg border border-border">
+          <table className="min-w-full divide-y divide-border text-sm">
+            <thead className="bg-surface">
               <tr>
                 <th className="table-head-cell">
                   Subject
@@ -156,23 +156,23 @@ export default function ScoreCard({ score }: ScoreCardProps) {
                 <th className="table-head-cell">
                   Group
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
                   Score
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 bg-white">
+            <tbody className="divide-y divide-border-muted bg-surface">
               {subjects.map((subject) => (
-                <tr key={subject.label} className="hover:bg-slate-50">
-                  <td className="table-cell font-medium text-slate-900">
+                <tr key={subject.label} className="hover:bg-surface-raised">
+                  <td className="table-cell font-medium text-foreground">
                     {subject.label}
                   </td>
                   <td className="table-cell">
-                    <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
+                    <span className="rounded-md bg-surface-muted px-2 py-1 text-xs font-medium text-muted">
                       {subject.group}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-right text-sm font-semibold text-slate-950">
+                  <td className="px-4 py-4 text-right text-sm font-semibold text-foreground">
                     {formatScore(subject.value)}
                   </td>
                 </tr>
@@ -181,11 +181,11 @@ export default function ScoreCard({ score }: ScoreCardProps) {
           </table>
         </div>
 
-        <div className="rounded-lg border border-teal-100 bg-teal-50 p-4">
-          <p className="text-sm font-semibold text-teal-900">
+        <div className="rounded-lg border border-primary-border bg-primary-soft p-4">
+          <p className="text-sm font-semibold text-primary-text">
             Foreign Language Code
           </p>
-          <p className="mt-3 text-3xl font-semibold tracking-normal text-teal-950">
+          <p className="mt-3 text-3xl font-semibold tracking-normal text-primary-text">
             {formatScore(languageCode)}
           </p>
         </div>

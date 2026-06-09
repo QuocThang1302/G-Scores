@@ -8,7 +8,7 @@ type SkeletonBlockProps = {
 function SkeletonBlock({ className = "", style }: SkeletonBlockProps) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-slate-200/80 ${className}`}
+      className={`skeleton-block rounded-md ${className}`}
       style={style}
       aria-hidden="true"
     />
@@ -17,7 +17,7 @@ function SkeletonBlock({ className = "", style }: SkeletonBlockProps) {
 
 function MetricCardSkeleton() {
   return (
-    <article className="panel border-t-4 border-t-slate-200 p-5">
+    <article className="panel border-t-4 border-t-border p-5">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <SkeletonBlock className="h-3 w-32" />
@@ -41,7 +41,7 @@ export function DashboardSkeleton() {
 
       <section className="mt-6 grid gap-4 xl:grid-cols-[1fr_0.95fr]">
         <article className="panel overflow-hidden">
-          <div className="flex flex-col gap-4 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-4 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <SkeletonBlock className="h-3 w-36" />
               <SkeletonBlock className="mt-3 h-6 w-56" />
@@ -52,7 +52,7 @@ export function DashboardSkeleton() {
             </div>
           </div>
           <div className="h-[360px] px-5 py-5">
-            <div className="flex h-full items-end gap-2 border-b border-l border-slate-100 px-3 pb-4">
+            <div className="flex h-full items-end gap-2 border-b border-l border-border-muted px-3 pb-4">
               {Array.from({ length: 20 }, (_, index) => (
                 <SkeletonBlock
                   key={index}
@@ -65,7 +65,7 @@ export function DashboardSkeleton() {
         </article>
 
         <article className="panel overflow-hidden">
-          <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
+          <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4">
             <div>
               <SkeletonBlock className="h-3 w-28" />
               <SkeletonBlock className="mt-3 h-6 w-44" />
@@ -119,8 +119,8 @@ export function ReportPageSkeleton() {
           <SkeletonBlock className="h-9 w-28" />
         </div>
         <SkeletonBlock className="h-[420px] w-full" />
-        <div className="mt-6 overflow-hidden rounded-lg border border-slate-200">
-          <div className="grid grid-cols-5 gap-px bg-slate-100 p-4">
+        <div className="mt-6 overflow-hidden rounded-lg border border-border">
+          <div className="grid grid-cols-5 gap-px bg-surface-muted p-4">
             {Array.from({ length: 25 }, (_, index) => (
               <SkeletonBlock key={index} className="h-4" />
             ))}
@@ -150,11 +150,11 @@ export function TopGroupSkeleton() {
       </section>
 
       <section className="panel mt-6 overflow-hidden">
-        <div className="border-b border-slate-200 px-5 py-4">
+        <div className="border-b border-border px-5 py-4">
           <SkeletonBlock className="h-3 w-20" />
           <SkeletonBlock className="mt-3 h-6 w-52" />
         </div>
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-border-muted">
           {Array.from({ length: 10 }, (_, index) => (
             <div
               key={index}
@@ -177,19 +177,19 @@ export function TopGroupSkeleton() {
 export function ScoreCardSkeleton() {
   return (
     <section className="panel overflow-hidden">
-      <div className="border-b border-blue-700 bg-gradient-to-r from-blue-950 via-blue-800 to-sky-500 px-5 py-5 text-white">
-        <SkeletonBlock className="h-3 w-36 bg-white/25" />
+      <div className="score-hero border-b border-divider-strong px-5 py-5">
+        <SkeletonBlock className="score-hero-skeleton h-3 w-36" />
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <SkeletonBlock className="h-9 w-40 bg-white/25" />
+          <SkeletonBlock className="score-hero-skeleton h-9 w-40" />
           <div className="grid gap-2 sm:min-w-[28rem] sm:grid-cols-3">
             {Array.from({ length: 3 }, (_, index) => (
               <div
                 key={index}
-                className="rounded-lg border border-white/20 bg-white/10 px-3 py-3"
+                className="score-hero-tile rounded-lg px-3 py-3"
               >
-                <SkeletonBlock className="mx-auto h-3 w-10 bg-white/25" />
-                <SkeletonBlock className="mx-auto mt-2 h-7 w-16 bg-white/25" />
-                <SkeletonBlock className="mx-auto mt-2 h-3 w-20 bg-white/25" />
+                <SkeletonBlock className="score-hero-skeleton mx-auto h-3 w-10" />
+                <SkeletonBlock className="score-hero-skeleton mx-auto mt-2 h-7 w-16" />
+                <SkeletonBlock className="score-hero-skeleton mx-auto mt-2 h-3 w-20" />
               </div>
             ))}
           </div>
@@ -197,11 +197,11 @@ export function ScoreCardSkeleton() {
       </div>
 
       <div className="grid gap-4 p-5 lg:grid-cols-[1fr_220px]">
-        <div className="overflow-hidden rounded-lg border border-slate-200">
+        <div className="overflow-hidden rounded-lg border border-border">
           {Array.from({ length: 10 }, (_, index) => (
             <div
               key={index}
-              className="grid grid-cols-[1fr_120px_80px] gap-4 border-b border-slate-100 px-4 py-4 last:border-b-0"
+              className="grid grid-cols-[1fr_120px_80px] gap-4 border-b border-border-muted px-4 py-4 last:border-b-0"
             >
               <SkeletonBlock className="h-4 w-32" />
               <SkeletonBlock className="h-5 w-16" />
@@ -210,9 +210,9 @@ export function ScoreCardSkeleton() {
           ))}
         </div>
 
-        <div className="rounded-lg border border-teal-100 bg-teal-50 p-4">
-          <SkeletonBlock className="h-4 w-36 bg-teal-200/70" />
-          <SkeletonBlock className="mt-4 h-9 w-20 bg-teal-200/70" />
+        <div className="rounded-lg border border-primary-border bg-primary-soft p-4">
+          <SkeletonBlock className="h-4 w-36 bg-primary-border/70" />
+          <SkeletonBlock className="mt-4 h-9 w-20 bg-primary-border/70" />
         </div>
       </div>
     </section>

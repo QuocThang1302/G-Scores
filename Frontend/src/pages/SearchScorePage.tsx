@@ -64,12 +64,12 @@ export default function SearchScorePage() {
       >
         <div className="min-w-0">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+            <span className="icon-tile icon-tile-primary h-11 w-11">
               <FileSearch className="h-5 w-5" aria-hidden="true" />
             </span>
             <div>
               <p className="eyebrow">Lookup</p>
-              <h2 className="text-lg font-semibold tracking-normal text-slate-950">
+              <h2 className="text-lg font-semibold tracking-normal text-foreground">
                 Student Score Record
               </h2>
             </div>
@@ -77,7 +77,7 @@ export default function SearchScorePage() {
 
           <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto]">
             <label className="block">
-              <span className="text-sm font-semibold text-slate-700">
+              <span className="text-sm font-semibold text-muted">
                 Student Number
               </span>
               <input
@@ -85,12 +85,12 @@ export default function SearchScorePage() {
                 onChange={(event) => setSbd(event.target.value)}
                 inputMode="numeric"
                 placeholder="Example: 01000001"
-                className="mt-2 h-12 w-full rounded-lg border border-slate-300 bg-white px-4 text-base text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
+                className="app-input mt-2 h-12 w-full"
               />
             </label>
             <button
               type="submit"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-teal-600 px-5 text-sm font-semibold text-white transition hover:bg-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-100 sm:self-end"
+              className="btn-primary h-12 sm:self-end"
             >
               <Search className="h-5 w-5" aria-hidden="true" />
               Search
@@ -100,7 +100,7 @@ export default function SearchScorePage() {
       </form>
 
       {error ? (
-        <div className="mt-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+        <div className="alert-danger mt-5">
           {error}
         </div>
       ) : null}
