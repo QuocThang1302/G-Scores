@@ -3,6 +3,10 @@ import { ExamScore, Prisma } from "@prisma/client";
 
 import { PrismaService } from "../prisma/prisma.service";
 import { ScoreField, Subject, SUBJECTS } from "./models/subject.model";
+import {
+  AdmissionGroupScoringStrategy,
+  SumAdmissionGroupScoringStrategy,
+} from "./strategies/admission-group-scoring.strategy";
 
 type SerializedExamScore = Omit<ExamScore, "id"> & {
   id: string;
@@ -240,6 +244,8 @@ export class ScoresService {
     Promise<TopAdmissionGroupReport>
   >();
   private readonly topAdmissionGroupCacheTtlMs = 10 * 60 * 1000;
+  private readonly admissionGroupScoringStrategy: AdmissionGroupScoringStrategy =
+    new SumAdmissionGroupScoringStrategy();
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -435,13 +441,16 @@ export class ScoresService {
     const notNullConditions = subjectColumns.map(
       (column) => Prisma.sql`${column} IS NOT NULL`,
     );
-    const totalExpression = Prisma.join(subjectColumns, " + ");
+    const totalExpression =
+      this.admissionGroupScoringStrategy.buildTotalScoreSqlExpression(
+        subjectColumns,
+      );
 
     const rows = await this.prisma.$queryRaw<TopAdmissionGroupRow[]>(Prisma.sql`
       SELECT
         sbd,
         ${Prisma.join(scoreSelections)},
-        (${totalExpression}) AS total_score
+        ${totalExpression} AS total_score
       FROM exam_scores
       WHERE ${Prisma.join(notNullConditions, " AND ")}
       ORDER BY total_score DESC, sbd ASC
@@ -744,22 +753,12 @@ export class ScoresService {
         ...subject,
         score: score[subject.field],
       }));
+      const totalScore =
+        this.admissionGroupScoringStrategy.calculateTotalScore(subjectScores);
 
-      if (
-        subjectScores.some(
-          (subject) =>
-            subject.score === null ||
-            subject.score === undefined ||
-            Number.isNaN(subject.score),
-        )
-      ) {
+      if (totalScore === null) {
         return null;
       }
-
-      const totalScore = subjectScores.reduce(
-        (total, subject) => total + Number(subject.score),
-        0,
-      );
 
       return {
         code: group.code,
