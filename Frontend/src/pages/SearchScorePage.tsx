@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import axios from "axios";
-import { FileSearch, Search, ShieldCheck } from "lucide-react";
+import { FileSearch, Search } from "lucide-react";
 
 import { getScoreBySbd } from "../api/scoreApi";
 import ScoreCard from "../components/ScoreCard";
@@ -60,7 +60,7 @@ export default function SearchScorePage() {
 
       <form
         onSubmit={handleSubmit}
-        className="panel mt-6 grid gap-5 p-5 lg:grid-cols-[1fr_280px]"
+        className="panel mt-6 p-5"
       >
         <div className="min-w-0">
           <div className="flex items-center gap-3">
@@ -97,22 +97,6 @@ export default function SearchScorePage() {
             </button>
           </div>
         </div>
-
-        <aside className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
-              <ShieldCheck className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div>
-              <p className="text-sm font-semibold text-slate-950">
-                Validation
-              </p>
-              <p className="mt-1 text-xs leading-5 text-slate-500">
-                Numeric student numbers only.
-              </p>
-            </div>
-          </div>
-        </aside>
       </form>
 
       {error ? (
