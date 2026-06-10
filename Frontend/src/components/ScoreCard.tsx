@@ -103,16 +103,16 @@ export default function ScoreCard({ score }: ScoreCardProps) {
         <p className="score-hero-muted text-xs font-semibold uppercase tracking-wider">
           Student Number
         </p>
-        <div className="mt-2 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="break-all text-3xl font-semibold tracking-normal">
+        <div className="mt-3 grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_28rem] sm:items-end">
+          <h2 className="break-all text-3xl font-semibold tracking-normal sm:self-end">
             {score.sbd}
           </h2>
           {topAdmissionGroups.length > 0 ? (
-            <div className="grid min-w-0 gap-2 sm:min-w-[28rem] sm:grid-cols-3">
+            <div className="grid min-w-0 gap-2 sm:grid-cols-3">
               {topAdmissionGroups.map((group) => (
                 <div
                   key={group.code}
-                  className="score-hero-tile rounded-lg px-3 py-3 text-center shadow-sm"
+                  className="score-hero-tile flex h-24 flex-col items-center justify-center rounded-lg px-3 py-3 text-center shadow-sm"
                 >
                   <p className="text-xs font-semibold">
                     {group.code}
@@ -127,7 +127,7 @@ export default function ScoreCard({ score }: ScoreCardProps) {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:w-80">
+            <div className="grid grid-cols-2 gap-3 sm:w-80 sm:justify-self-end">
               <div className="score-hero-tile rounded-lg px-3 py-2">
                 <p className="score-hero-muted text-xs">Subjects</p>
                 <p className="mt-1 text-lg font-semibold">
@@ -147,16 +147,16 @@ export default function ScoreCard({ score }: ScoreCardProps) {
 
       <div className="grid min-w-0 gap-4 p-5 lg:grid-cols-[1fr_220px]">
         <div className="max-w-full overflow-x-auto rounded-lg border border-border">
-          <table className="min-w-[480px] divide-y divide-border text-sm">
+          <table className="w-full min-w-full table-fixed divide-y divide-border text-sm sm:min-w-[480px]">
             <thead className="bg-surface">
               <tr>
-                <th className="table-head-cell">
+                <th className="w-[52%] table-head-cell sm:w-[82%]">
                   Subject
                 </th>
-                <th className="table-head-cell">
+                <th className="w-[26%] table-head-cell sm:w-[11%]">
                   Group
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
+                <th className="w-[22%] px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle sm:w-[7%]">
                   Score
                 </th>
               </tr>
@@ -168,7 +168,7 @@ export default function ScoreCard({ score }: ScoreCardProps) {
                     {subject.label}
                   </td>
                   <td className="table-cell">
-                    <span className="rounded-md bg-surface-muted px-2 py-1 text-xs font-medium text-muted">
+                    <span className="rounded-md bg-surface-muted px-1.5 py-1 text-xs font-medium text-muted sm:px-2">
                       {subject.group}
                     </span>
                   </td>

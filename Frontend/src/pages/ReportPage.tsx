@@ -218,61 +218,64 @@ export default function ReportPage() {
 
         {!error ? (
           <>
-            <div className="h-[420px] min-w-0 w-full overflow-hidden">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={chartData}
-                  margin={{ top: 16, right: 12, left: 24 }}
-                >
-                  <CartesianGrid
-                    stroke={cssRgb("--color-chart-grid")}
-                    strokeDasharray="3 3"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="subject"
-                    tickLine={false}
-                    axisLine={false}
-                    interval={0}
-                    angle={-20}
-                    textAnchor="end"
-                    height={80}
-                    tick={chartAxisTick}
-                  />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    width={72}
-                    tick={chartAxisTick}
-                  />
-                  <Tooltip
-                    contentStyle={chartTooltipContentStyle}
-                    itemStyle={chartTooltipItemStyle}
-                    labelStyle={chartTooltipLabelStyle}
-                  />
-                  <Legend wrapperStyle={{ color: cssRgb("--color-muted") }} />
-                  <Bar
-                    dataKey="excellent"
-                    name=">= 8"
-                    fill={cssRgb("--color-primary")}
-                  />
-                  <Bar
-                    dataKey="good"
-                    name="6 to <8"
-                    fill={cssRgb("--color-accent")}
-                  />
-                  <Bar
-                    dataKey="average"
-                    name="4 to <6"
-                    fill={cssRgb("--color-warning")}
-                  />
-                  <Bar
-                    dataKey="poor"
-                    name="< 4"
-                    fill={cssRgb("--color-danger")}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+            <div className="min-w-0 w-full overflow-x-auto">
+              <div className="h-[420px] w-full min-w-[720px] sm:min-w-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={chartData}
+                    margin={{ top: 16, right: 12, left: 24, bottom: 12 }}
+                  >
+                    <CartesianGrid
+                      stroke={cssRgb("--color-chart-grid")}
+                      strokeDasharray="3 3"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="subject"
+                      tickLine={false}
+                      axisLine={false}
+                      interval={0}
+                      angle={-28}
+                      textAnchor="end"
+                      height={94}
+                      tick={chartAxisTick}
+                      tickMargin={10}
+                    />
+                    <YAxis
+                      tickLine={false}
+                      axisLine={false}
+                      width={72}
+                      tick={chartAxisTick}
+                    />
+                    <Tooltip
+                      contentStyle={chartTooltipContentStyle}
+                      itemStyle={chartTooltipItemStyle}
+                      labelStyle={chartTooltipLabelStyle}
+                    />
+                    <Legend wrapperStyle={{ color: cssRgb("--color-muted") }} />
+                    <Bar
+                      dataKey="excellent"
+                      name=">= 8"
+                      fill={cssRgb("--color-primary")}
+                    />
+                    <Bar
+                      dataKey="good"
+                      name="6 to <8"
+                      fill={cssRgb("--color-accent")}
+                    />
+                    <Bar
+                      dataKey="average"
+                      name="4 to <6"
+                      fill={cssRgb("--color-warning")}
+                    />
+                    <Bar
+                      dataKey="poor"
+                      name="< 4"
+                      fill={cssRgb("--color-danger")}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
             <div className="mt-6 grid min-w-0 gap-3 sm:hidden">

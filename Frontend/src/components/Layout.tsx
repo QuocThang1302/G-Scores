@@ -33,9 +33,9 @@ export default function Layout({ children }: LayoutProps) {
     navItems.find((item) => item.to === location.pathname) ?? navItems[0];
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-app text-foreground">
-      <div className="flex min-h-screen w-full max-w-full overflow-x-hidden">
-        <aside className="app-sidebar sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-sidebar-border text-sidebar-foreground md:flex">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-app text-foreground">
+      <div className="flex min-h-screen w-full max-w-full overflow-x-clip">
+        <aside className="app-sidebar sticky top-0 hidden h-screen w-72 shrink-0 self-start flex-col border-r border-sidebar-border text-sidebar-foreground md:flex">
           <div className="border-b border-sidebar-border px-6 py-6">
             <NavLink
               to="/"
@@ -136,7 +136,7 @@ export default function Layout({ children }: LayoutProps) {
               </div>
             </div>
 
-            <nav className="grid w-full max-w-full grid-cols-2 gap-2 border-t border-border-muted px-4 py-3 sm:grid-cols-3 md:hidden">
+            <nav className="flex w-full max-w-full gap-2 overflow-x-auto border-t border-border-muted px-4 py-3 md:hidden">
               {navItems.map((item) => {
                 const Icon = item.icon;
 
@@ -147,7 +147,7 @@ export default function Layout({ children }: LayoutProps) {
                     end={item.to === "/"}
                     className={({ isActive }) =>
                       [
-                        "flex min-h-10 min-w-0 items-center gap-2 rounded-lg px-3 text-sm font-medium transition",
+                        "flex min-h-10 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium transition",
                         isActive
                           ? "bg-sidebar-accent text-sidebar-accent-contrast"
                           : "bg-surface-muted text-muted hover:bg-sidebar-accent-soft hover:text-sidebar-foreground",
@@ -155,14 +155,14 @@ export default function Layout({ children }: LayoutProps) {
                     }
                   >
                     <Icon className="h-4 w-4" aria-hidden="true" />
-                    <span className="truncate">{item.label}</span>
+                    <span>{item.label}</span>
                   </NavLink>
                 );
               })}
             </nav>
           </header>
 
-          <main className="min-w-0 max-w-full overflow-x-hidden">
+          <main className="min-w-0 max-w-full overflow-x-clip">
             {children}
           </main>
         </div>

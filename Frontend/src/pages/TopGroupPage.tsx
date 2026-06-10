@@ -140,7 +140,7 @@ export default function TopGroupPage() {
             value={selectedGroupCode}
             onChange={(event) => setSelectedGroupCode(event.target.value)}
             disabled={isLoadingGroups || groups.length === 0}
-            className="app-select h-11 w-full min-w-0 lg:min-w-72"
+            className="app-select h-11 w-full min-w-0 lg:ml-auto lg:w-96"
             aria-label="Select admission group"
           >
             {groups.length > 0 ? (
@@ -219,7 +219,7 @@ export default function TopGroupPage() {
 
           {!error ? (
             <div className="max-w-full overflow-x-auto">
-              <table className="min-w-[720px] divide-y divide-border text-sm">
+              <table className="w-full min-w-[720px] divide-y divide-border text-sm">
                 <thead className="bg-surface-raised">
                   <tr>
                     <th className="w-20 table-head-cell">Rank</th>

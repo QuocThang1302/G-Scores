@@ -51,15 +51,17 @@ export function DashboardSkeleton() {
               <SkeletonBlock className="h-10 w-32" />
             </div>
           </div>
-          <div className="h-[360px] min-w-0 overflow-hidden px-5 py-5">
-            <div className="flex h-full items-end gap-2 border-b border-l border-border-muted px-3 pb-4">
-              {Array.from({ length: 20 }, (_, index) => (
-                <SkeletonBlock
-                  key={index}
-                  className="flex-1 rounded-t"
-                  style={{ height: `${20 + ((index * 17) % 70)}%` }}
-                />
-              ))}
+          <div className="min-w-0 overflow-x-auto px-5 py-5">
+            <div className="h-[360px] w-full min-w-[720px] sm:min-w-0">
+              <div className="flex h-full items-end gap-2 border-b border-l border-border-muted px-3 pb-4">
+                {Array.from({ length: 20 }, (_, index) => (
+                  <SkeletonBlock
+                    key={index}
+                    className="flex-1 rounded-t"
+                    style={{ height: `${20 + ((index * 17) % 70)}%` }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </article>
@@ -118,7 +120,9 @@ export function ReportPageSkeleton() {
           </div>
           <SkeletonBlock className="h-9 w-28" />
         </div>
-        <SkeletonBlock className="h-[420px] min-w-0 w-full" />
+        <div className="min-w-0 overflow-x-auto">
+          <SkeletonBlock className="h-[420px] w-full min-w-[720px] sm:min-w-0" />
+        </div>
         <div className="mt-6 overflow-hidden rounded-lg border border-border">
           <div className="grid min-w-0 grid-cols-2 gap-px bg-surface-muted p-4 sm:grid-cols-5">
             {Array.from({ length: 25 }, (_, index) => (
@@ -181,13 +185,13 @@ export function ScoreCardSkeleton() {
     <section className="panel overflow-hidden">
       <div className="score-hero border-b border-divider-strong px-5 py-5">
         <SkeletonBlock className="score-hero-skeleton h-3 w-36" />
-        <div className="mt-3 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <SkeletonBlock className="score-hero-skeleton h-9 w-40" />
-          <div className="grid min-w-0 gap-2 sm:min-w-[28rem] sm:grid-cols-3">
+        <div className="mt-3 grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_28rem] sm:items-end">
+          <SkeletonBlock className="score-hero-skeleton h-9 w-40 sm:self-end" />
+          <div className="grid min-w-0 gap-2 sm:grid-cols-3">
             {Array.from({ length: 3 }, (_, index) => (
               <div
                 key={index}
-                className="score-hero-tile rounded-lg px-3 py-3"
+                className="score-hero-tile flex h-24 flex-col justify-center rounded-lg px-3 py-3"
               >
                 <SkeletonBlock className="score-hero-skeleton mx-auto h-3 w-10" />
                 <SkeletonBlock className="score-hero-skeleton mx-auto mt-2 h-7 w-16" />
@@ -203,7 +207,7 @@ export function ScoreCardSkeleton() {
           {Array.from({ length: 10 }, (_, index) => (
             <div
               key={index}
-              className="grid min-w-[480px] grid-cols-[1fr_120px_80px] gap-4 border-b border-border-muted px-4 py-4 last:border-b-0"
+              className="grid w-full min-w-full grid-cols-[minmax(0,1fr)_72px_56px] gap-3 border-b border-border-muted px-4 py-4 last:border-b-0 sm:min-w-[480px] sm:grid-cols-[minmax(0,1fr)_80px_56px] sm:gap-4"
             >
               <SkeletonBlock className="h-4 w-32" />
               <SkeletonBlock className="h-5 w-16" />

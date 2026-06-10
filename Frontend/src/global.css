@@ -175,7 +175,7 @@
     min-width: 320px;
     min-height: 100%;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
     background: rgb(var(--color-app));
   }
 
@@ -185,7 +185,7 @@
     min-width: 320px;
     min-height: 100vh;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
     background:
       radial-gradient(
         circle at top left,
@@ -200,7 +200,7 @@
   #root {
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   a {
@@ -240,7 +240,7 @@
   }
 
   .page-shell {
-    @apply mx-auto min-w-0 w-full max-w-7xl overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8 lg:py-8;
+    @apply min-w-0 w-full max-w-none overflow-x-clip px-4 py-6 sm:px-6 lg:px-8 lg:py-8;
   }
 
   .app-sidebar {

@@ -318,66 +318,69 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="h-[440px] min-w-0 overflow-hidden px-3 py-5 sm:px-5">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={chartBuckets}
-                    margin={{ top: 8, right: 12, left: 0, bottom: 48 }}
-                  >
-                    <CartesianGrid
-                      stroke={cssRgb("--color-chart-grid")}
-                      vertical={false}
-                    />
-                    <XAxis
-                      dataKey="rangeLabel"
-                      tickLine={false}
-                      axisLine={false}
-                      interval={0}
-                      angle={-35}
-                      textAnchor="end"
-                      height={64}
-                      tick={chartTick}
-                    />
-                    <YAxis
-                      tickLine={false}
-                      axisLine={false}
-                      width={48}
-                      tick={chartTick}
-                      tickFormatter={(value) =>
-                        Number(value) >= 1000
-                          ? `${Math.round(Number(value) / 1000)}k`
-                          : String(value)
-                      }
-                    />
-                    <Tooltip
-                      contentStyle={chartTooltipContentStyle}
-                      itemStyle={chartTooltipItemStyle}
-                      labelStyle={chartTooltipLabelStyle}
-                      cursor={{
-                        fill: cssRgb("--color-chart-cursor"),
-                        opacity: 0.06,
-                      }}
-                      formatter={(value) => [
-                        formatCount(Number(value)),
-                        "Candidates",
-                      ]}
-                      labelFormatter={(label) => `Score range ${label}`}
-                    />
-                    <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                      {chartBuckets.map((bucket) => (
-                        <Cell
-                          key={`${bucket.score}-${bucket.rangeLabel}`}
-                          fill={getScoreColor(bucket.score)}
-                          opacity={
-                            maxSelectedBucket > 0 && bucket.count === 0
-                              ? 0.35
-                              : 1
-                          }
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="min-w-0 overflow-x-auto px-3 py-5 sm:px-5">
+                <div className="h-[440px] w-full min-w-[720px] sm:min-w-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={chartBuckets}
+                      margin={{ top: 8, right: 12, left: 0, bottom: 58 }}
+                    >
+                      <CartesianGrid
+                        stroke={cssRgb("--color-chart-grid")}
+                        vertical={false}
+                      />
+                      <XAxis
+                        dataKey="rangeLabel"
+                        tickLine={false}
+                        axisLine={false}
+                        interval={0}
+                        angle={-35}
+                        textAnchor="end"
+                        height={78}
+                        tick={chartTick}
+                        tickMargin={10}
+                      />
+                      <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        width={48}
+                        tick={chartTick}
+                        tickFormatter={(value) =>
+                          Number(value) >= 1000
+                            ? `${Math.round(Number(value) / 1000)}k`
+                            : String(value)
+                        }
+                      />
+                      <Tooltip
+                        contentStyle={chartTooltipContentStyle}
+                        itemStyle={chartTooltipItemStyle}
+                        labelStyle={chartTooltipLabelStyle}
+                        cursor={{
+                          fill: cssRgb("--color-chart-cursor"),
+                          opacity: 0.06,
+                        }}
+                        formatter={(value) => [
+                          formatCount(Number(value)),
+                          "Candidates",
+                        ]}
+                        labelFormatter={(label) => `Score range ${label}`}
+                      />
+                      <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                        {chartBuckets.map((bucket) => (
+                          <Cell
+                            key={`${bucket.score}-${bucket.rangeLabel}`}
+                            fill={getScoreColor(bucket.score)}
+                            opacity={
+                              maxSelectedBucket > 0 && bucket.count === 0
+                                ? 0.35
+                                : 1
+                            }
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </article>
 
