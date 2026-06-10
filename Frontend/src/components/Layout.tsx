@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import {
   BarChart3,
   ChevronRight,
@@ -7,9 +7,12 @@ import {
   Medal,
   Moon,
   Search,
+  Settings,
   Sun,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
+
+import { useTheme } from "../contexts/ThemeContext";
 
 type LayoutProps = {
   children: ReactNode;
@@ -20,39 +23,14 @@ const navItems = [
   { to: "/search", label: "Search Scores", icon: Search },
   { to: "/reports", label: "Reports", icon: BarChart3 },
   { to: "/top-group", label: "Top Group", icon: Medal },
+  { to: "/settings", label: "Settings", icon: Settings },
 ];
-
-type Theme = "light" | "dark";
-
-const themeStorageKey = "g-scores-theme";
-
-const getInitialTheme = (): Theme => {
-  if (typeof window === "undefined") {
-    return "light";
-  }
-
-  const storedTheme = window.localStorage.getItem(themeStorageKey);
-
-  if (storedTheme === "light" || storedTheme === "dark") {
-    return storedTheme;
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-};
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const { isDarkMode, toggleTheme } = useTheme();
   const currentPage =
     navItems.find((item) => item.to === location.pathname) ?? navItems[0];
-  const isDarkMode = theme === "dark";
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    window.localStorage.setItem(themeStorageKey, theme);
-  }, [theme]);
 
   return (
     <div className="min-h-screen bg-app text-foreground">
@@ -137,7 +115,7 @@ export default function Layout({ children }: LayoutProps) {
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setTheme(isDarkMode ? "light" : "dark")}
+                  onClick={toggleTheme}
                   className="icon-tile h-10 w-10 border border-border bg-surface-muted text-muted transition hover:text-foreground focus:outline-none focus:ring-4 focus:ring-primary-soft"
                   aria-label={
                     isDarkMode ? "Switch to light mode" : "Switch to dark mode"

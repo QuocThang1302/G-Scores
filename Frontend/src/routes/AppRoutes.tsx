@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import ReportPage from "../pages/ReportPage";
 import SearchScorePage from "../pages/SearchScorePage";
+import SettingsPage from "../pages/SettingsPage";
 import TopGroupPage from "../pages/TopGroupPage";
 
 export default function AppRoutes() {
@@ -12,6 +13,7 @@ export default function AppRoutes() {
       <Route path="/search" element={<SearchScorePage />} />
       <Route path="/reports" element={<ReportPage />} />
       <Route path="/top-group" element={<TopGroupPage />} />
+      <Route path="/settings" element={<SettingsPage />} />
       <Route
         path="/top-group-a"
         element={<Navigate to="/top-group" replace />}

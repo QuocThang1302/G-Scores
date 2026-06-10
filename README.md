@@ -4,6 +4,31 @@ Full-stack application for searching and reporting Vietnam THPT 2024 exam
 scores. The project includes a NestJS API, PostgreSQL database, Prisma ORM, and
 a React + Vite frontend.
 
+## Tech Stack
+
+### Frontend
+
+- React
+- Vite
+- TypeScript
+- Tailwind CSS
+- Recharts
+- Axios
+
+### Backend
+
+- NestJS
+- TypeScript
+- Prisma ORM
+- PostgreSQL
+
+### Deployment
+
+- Frontend: Vercel
+- Backend: Render
+- Database: Supabase PostgreSQL
+- Docker Compose for local setup
+
 ## Prerequisites
 
 - Node.js 20 or newer
