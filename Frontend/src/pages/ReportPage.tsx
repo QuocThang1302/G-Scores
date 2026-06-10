@@ -78,6 +78,12 @@ const chartTooltipLabelStyle = {
 const chartTooltipItemStyle = {
   color: cssRgb("--color-muted"),
 };
+const scoreLevelColumns = [
+  { key: "excellent", label: ">= 8" },
+  { key: "good", label: "6 to <8" },
+  { key: "average", label: "4 to <6" },
+  { key: "poor", label: "< 4" },
+] as const;
 
 export default function ReportPage() {
   const [reports, setReports] = useState<ScoreLevelReport[]>([]);
@@ -162,7 +168,7 @@ export default function ReportPage() {
       {isLoading ? <ReportPageSkeleton /> : null}
 
       {!isLoading && !error ? (
-        <section className="mt-6 grid gap-4 md:grid-cols-3">
+        <section className="mt-6 grid min-w-0 gap-4 md:grid-cols-3">
           {summaryCards.map((card) => {
             const Icon = card.icon;
 
@@ -212,7 +218,7 @@ export default function ReportPage() {
 
         {!error ? (
           <>
-            <div className="h-[420px] w-full">
+            <div className="h-[420px] min-w-0 w-full overflow-hidden">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={chartData}
@@ -269,49 +275,79 @@ export default function ReportPage() {
               </ResponsiveContainer>
             </div>
 
-            <div className="mt-6 overflow-hidden rounded-lg border border-border">
-              <table className="min-w-full divide-y divide-border text-sm">
-                <thead className="bg-surface-raised">
-                  <tr>
-                    <th className="table-head-cell">
-                      Subject
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
-                      &gt;= 8
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
-                      6 to &lt;8
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
-                      4 to &lt;6
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
-                      &lt; 4
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border-muted bg-surface">
-                  {chartData.map((row) => (
-                    <tr key={row.subject} className="hover:bg-surface-raised">
-                      <td className="px-4 py-3 font-medium text-foreground">
-                        {row.subject}
-                      </td>
-                      <td className="px-4 py-3 text-right text-muted">
-                        {row.excellent.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-right text-muted">
-                        {row.good.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-right text-muted">
-                        {row.average.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-right text-muted">
-                        {row.poor.toLocaleString()}
-                      </td>
+            <div className="mt-6 grid min-w-0 gap-3 sm:hidden">
+              {chartData.map((row) => (
+                <div
+                  key={row.subject}
+                  className="min-w-0 rounded-lg border border-border bg-surface-raised p-4"
+                >
+                  <p className="font-semibold text-foreground">
+                    {row.subject}
+                  </p>
+                  <dl className="mt-3 grid grid-cols-2 gap-2">
+                    {scoreLevelColumns.map((column) => (
+                      <div
+                        key={column.key}
+                        className="rounded-lg bg-surface px-3 py-2"
+                      >
+                        <dt className="text-xs font-semibold uppercase tracking-wider text-subtle">
+                          {column.label}
+                        </dt>
+                        <dd className="mt-1 text-sm font-semibold text-foreground">
+                          {row[column.key].toLocaleString()}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 hidden overflow-hidden rounded-lg border border-border sm:block">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[680px] divide-y divide-border text-sm">
+                  <thead className="bg-surface-raised">
+                    <tr>
+                      <th className="table-head-cell">
+                        Subject
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
+                        &gt;= 8
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
+                        6 to &lt;8
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
+                        4 to &lt;6
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle">
+                        &lt; 4
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-border-muted bg-surface">
+                    {chartData.map((row) => (
+                      <tr key={row.subject} className="hover:bg-surface-raised">
+                        <td className="px-4 py-3 font-medium text-foreground">
+                          {row.subject}
+                        </td>
+                        <td className="px-4 py-3 text-right text-muted">
+                          {row.excellent.toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 text-right text-muted">
+                          {row.good.toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 text-right text-muted">
+                          {row.average.toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 text-right text-muted">
+                          {row.poor.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </>
         ) : null}

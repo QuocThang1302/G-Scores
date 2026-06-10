@@ -122,11 +122,11 @@ export default function TopGroupPage() {
 
       <section className="panel mt-6 p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <span className="icon-tile icon-tile-primary h-11 w-11">
               <Medal className="h-5 w-5" aria-hidden="true" />
             </span>
-            <div>
+            <div className="min-w-0">
               <p className="eyebrow">Admission Group</p>
               <h2 className="text-lg font-semibold tracking-normal text-foreground">
                 {currentGroup
@@ -140,7 +140,7 @@ export default function TopGroupPage() {
             value={selectedGroupCode}
             onChange={(event) => setSelectedGroupCode(event.target.value)}
             disabled={isLoadingGroups || groups.length === 0}
-            className="app-select h-11 lg:min-w-72"
+            className="app-select h-11 w-full min-w-0 lg:min-w-72"
             aria-label="Select admission group"
           >
             {groups.length > 0 ? (
@@ -172,7 +172,7 @@ export default function TopGroupPage() {
       {isLoadingReport ? <TopGroupSkeleton /> : null}
 
       {!isLoadingReport && !error && podium.length > 0 ? (
-        <section className="mt-6 grid gap-4 md:grid-cols-3">
+        <section className="mt-6 grid min-w-0 gap-4 md:grid-cols-3">
           {podium.map((student, index) => {
             const Icon = podiumIcons[index];
 
@@ -182,9 +182,9 @@ export default function TopGroupPage() {
                 className={`rounded-lg border p-5 shadow-soft ${podiumStyle}`}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-semibold">Rank {index + 1}</p>
-                    <p className="mt-2 text-2xl font-semibold tracking-normal">
+                    <p className="mt-2 break-all text-2xl font-semibold tracking-normal">
                       {student.sbd}
                     </p>
                   </div>
@@ -218,8 +218,8 @@ export default function TopGroupPage() {
           ) : null}
 
           {!error ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-border text-sm">
+            <div className="max-w-full overflow-x-auto">
+              <table className="min-w-[720px] divide-y divide-border text-sm">
                 <thead className="bg-surface-raised">
                   <tr>
                     <th className="w-20 table-head-cell">Rank</th>

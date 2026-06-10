@@ -103,12 +103,12 @@ export default function ScoreCard({ score }: ScoreCardProps) {
         <p className="score-hero-muted text-xs font-semibold uppercase tracking-wider">
           Student Number
         </p>
-        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="text-3xl font-semibold tracking-normal">
+        <div className="mt-2 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <h2 className="break-all text-3xl font-semibold tracking-normal">
             {score.sbd}
           </h2>
           {topAdmissionGroups.length > 0 ? (
-            <div className="grid gap-2 sm:min-w-[28rem] sm:grid-cols-3">
+            <div className="grid min-w-0 gap-2 sm:min-w-[28rem] sm:grid-cols-3">
               {topAdmissionGroups.map((group) => (
                 <div
                   key={group.code}
@@ -145,9 +145,9 @@ export default function ScoreCard({ score }: ScoreCardProps) {
         </div>
       </div>
 
-      <div className="grid gap-4 p-5 lg:grid-cols-[1fr_220px]">
-        <div className="overflow-hidden rounded-lg border border-border">
-          <table className="min-w-full divide-y divide-border text-sm">
+      <div className="grid min-w-0 gap-4 p-5 lg:grid-cols-[1fr_220px]">
+        <div className="max-w-full overflow-x-auto rounded-lg border border-border">
+          <table className="min-w-[480px] divide-y divide-border text-sm">
             <thead className="bg-surface">
               <tr>
                 <th className="table-head-cell">

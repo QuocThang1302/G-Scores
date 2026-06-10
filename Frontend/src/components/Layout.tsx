@@ -33,8 +33,8 @@ export default function Layout({ children }: LayoutProps) {
     navItems.find((item) => item.to === location.pathname) ?? navItems[0];
 
   return (
-    <div className="min-h-screen bg-app text-foreground">
-      <div className="flex min-h-screen">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-app text-foreground">
+      <div className="flex min-h-screen w-full max-w-full overflow-x-hidden">
         <aside className="app-sidebar sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-sidebar-border text-sidebar-foreground md:flex">
           <div className="border-b border-sidebar-border px-6 py-6">
             <NavLink
@@ -97,7 +97,7 @@ export default function Layout({ children }: LayoutProps) {
         </aside>
 
         <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur">
+          <header className="sticky top-0 z-20 w-full max-w-full overflow-hidden border-b border-border bg-surface/95 backdrop-blur">
             <div className="flex min-h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 text-xs font-medium text-subtle">
@@ -112,7 +112,7 @@ export default function Layout({ children }: LayoutProps) {
                 </h1>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex shrink-0 items-center gap-3">
                 <button
                   type="button"
                   onClick={toggleTheme}
@@ -136,7 +136,7 @@ export default function Layout({ children }: LayoutProps) {
               </div>
             </div>
 
-            <nav className="flex gap-2 overflow-x-auto border-t border-border-muted px-4 py-3 md:hidden">
+            <nav className="grid w-full max-w-full grid-cols-2 gap-2 border-t border-border-muted px-4 py-3 sm:grid-cols-3 md:hidden">
               {navItems.map((item) => {
                 const Icon = item.icon;
 
@@ -147,7 +147,7 @@ export default function Layout({ children }: LayoutProps) {
                     end={item.to === "/"}
                     className={({ isActive }) =>
                       [
-                        "flex min-h-10 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium transition",
+                        "flex min-h-10 min-w-0 items-center gap-2 rounded-lg px-3 text-sm font-medium transition",
                         isActive
                           ? "bg-sidebar-accent text-sidebar-accent-contrast"
                           : "bg-surface-muted text-muted hover:bg-sidebar-accent-soft hover:text-sidebar-foreground",
@@ -155,14 +155,16 @@ export default function Layout({ children }: LayoutProps) {
                     }
                   >
                     <Icon className="h-4 w-4" aria-hidden="true" />
-                    <span>{item.label}</span>
+                    <span className="truncate">{item.label}</span>
                   </NavLink>
                 );
               })}
             </nav>
           </header>
 
-          <main className="min-w-0">{children}</main>
+          <main className="min-w-0 max-w-full overflow-x-hidden">
+            {children}
+          </main>
         </div>
       </div>
     </div>

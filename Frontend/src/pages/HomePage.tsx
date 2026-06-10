@@ -258,7 +258,7 @@ export default function HomePage() {
 
       {!isLoading ? (
         <>
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <section className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {metricCards.map((card) => {
               const Icon = card.icon;
 
@@ -268,7 +268,7 @@ export default function HomePage() {
                   className="panel border-t-4 border-t-border-strong p-5"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <div>
+                    <div className="min-w-0">
                       <p className="eyebrow">{card.label}</p>
                       <p className="mt-3 text-3xl font-semibold tracking-normal text-foreground">
                         {card.value}
@@ -288,22 +288,22 @@ export default function HomePage() {
             })}
           </section>
 
-          <section className="mt-6 grid gap-4 xl:grid-cols-[1fr_0.95fr]">
+          <section className="mt-6 grid min-w-0 gap-4 xl:grid-cols-[1fr_0.95fr]">
             <article className="panel overflow-hidden">
               <div className="flex flex-col gap-4 border-b border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
+                <div className="min-w-0">
                   <p className="eyebrow">Score Distribution</p>
                   <h2 className="mt-1 text-lg font-semibold tracking-normal text-foreground">
                     {selectedSubject?.name ?? "Subject"} Score Distribution
                   </h2>
                 </div>
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
                   <select
                     value={selectedSubjectCode}
                     onChange={(event) =>
                       setSelectedSubjectCode(event.target.value)
                     }
-                    className="app-select h-10"
+                    className="app-select h-10 w-full min-w-0"
                     aria-label="Select subject for score distribution"
                   >
                     {dashboard.subjectAverages.map((subject) => (
@@ -318,7 +318,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="h-[440px] px-3 py-5 sm:px-5">
+              <div className="h-[440px] min-w-0 overflow-hidden px-3 py-5 sm:px-5">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={chartBuckets}
@@ -383,7 +383,7 @@ export default function HomePage() {
 
             <article className="panel overflow-hidden">
               <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4">
-                <div>
+                <div className="min-w-0">
                   <p className="eyebrow">Nationwide</p>
                   <h2 className="mt-1 text-lg font-semibold tracking-normal text-foreground">
                     Subject Averages
@@ -402,7 +402,7 @@ export default function HomePage() {
                   return (
                     <div
                       key={subject.code}
-                      className="grid items-center gap-3 sm:grid-cols-[128px_1fr_56px]"
+                      className="grid min-w-0 items-center gap-3 sm:grid-cols-[128px_1fr_56px]"
                     >
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-foreground">
