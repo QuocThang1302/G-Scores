@@ -207,7 +207,7 @@ export function ScoreCardSkeleton() {
           {Array.from({ length: 10 }, (_, index) => (
             <div
               key={index}
-              className="grid w-full min-w-full grid-cols-[minmax(0,1fr)_72px_56px] gap-3 border-b border-border-muted px-4 py-4 last:border-b-0 sm:min-w-[480px] sm:grid-cols-[minmax(0,1fr)_80px_56px] sm:gap-4"
+              className="grid w-full min-w-full grid-cols-[minmax(0,1fr)_72px_56px] gap-3 border-b border-border-muted px-4 py-4 last:border-b-0 sm:min-w-[480px] sm:grid-cols-[minmax(0,1fr)_120px_80px] sm:gap-4 xl:grid-cols-[minmax(0,1fr)_80px_56px]"
             >
               <SkeletonBlock className="h-4 w-32" />
               <SkeletonBlock className="h-5 w-16" />

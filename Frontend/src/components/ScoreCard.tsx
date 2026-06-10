@@ -150,13 +150,13 @@ export default function ScoreCard({ score }: ScoreCardProps) {
           <table className="w-full min-w-full table-fixed divide-y divide-border text-sm sm:min-w-[480px]">
             <thead className="bg-surface">
               <tr>
-                <th className="w-[52%] table-head-cell sm:w-[82%]">
+                <th className="w-[52%] table-head-cell sm:w-[58%] xl:w-[82%]">
                   Subject
                 </th>
-                <th className="w-[26%] table-head-cell sm:w-[11%]">
+                <th className="w-[26%] table-head-cell sm:w-[26%] xl:w-[11%]">
                   Group
                 </th>
-                <th className="w-[22%] px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle sm:w-[7%]">
+                <th className="w-[22%] px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-subtle sm:w-[16%] xl:w-[7%]">
                   Score
                 </th>
               </tr>
