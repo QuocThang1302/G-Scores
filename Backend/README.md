@@ -42,6 +42,25 @@ npm run start:dev
 
 ## API
 
+### `GET /`
+
+Returns a health check response for the API.
+
+Success response:
+
+```json
+{
+  "success": true,
+  "status": "ok",
+  "service": "g-scores-api",
+  "message": "G-Score API is running"
+}
+```
+
+### `GET /health`
+
+Returns the same health check response as `GET /`.
+
 ### `GET /scores/:sbd`
 
 Find one candidate by student number. `sbd` must be non-empty and contain digits only.

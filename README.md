@@ -148,6 +148,8 @@ npm run build
 
 ## API Endpoints
 
+- `GET /` - API health check
+- `GET /health` - API health check
 - `GET /scores/:sbd` - find one candidate by student number
 - `GET /scores/dashboard` - dashboard summary and distributions
 - `GET /scores/reports/score-levels` - score-level report by subject
@@ -155,3 +157,79 @@ npm run build
 - `GET /scores/reports/top-groups/:groupCode` - top candidates for a group
 
 Supported group examples include `A00`, `A01`, `B00`, `C00`, and `D01`.
+
+## Deployment
+
+### Frontend
+
+The frontend is deployed on Vercel.
+
+Frontend demo:
+
+<https://g-scores-nu.vercel.app>
+
+### Backend
+
+The backend API is deployed on Render.
+
+Backend API base URL:
+
+<https://g-scores-84h8.onrender.com>
+
+The backend root path `/` returns a health check response. You can also use the
+API endpoints below to test specific features.
+
+### Database
+
+The production database is hosted on Supabase PostgreSQL.
+
+### Deployment Note
+
+The backend is deployed on Render Free Tier. If the backend has been inactive
+for a while, the first request may take around 30-60 seconds because the service
+needs to wake up. After the first request, the application should respond
+normally.
+
+### Production API Examples
+
+Health check:
+
+<https://g-scores-84h8.onrender.com/health>
+
+Search score by registration number:
+
+<https://g-scores-84h8.onrender.com/scores/01000008>
+
+Dashboard report:
+
+<https://g-scores-84h8.onrender.com/scores/dashboard>
+
+Score-level report:
+
+<https://g-scores-84h8.onrender.com/scores/reports/score-levels>
+
+Supported admission groups:
+
+<https://g-scores-84h8.onrender.com/scores/reports/top-groups>
+
+Top candidates for Group A00:
+
+<https://g-scores-84h8.onrender.com/scores/reports/top-groups/A00>
+
+## Notes For Reviewers
+
+The application can be run locally with Docker using one command.
+
+The CSV import logic is included in the source code through the backend seed
+script.
+
+The local Docker setup uses a PostgreSQL container.
+
+The production deployment uses Supabase PostgreSQL.
+
+If the live demo takes time to load on the first request, please wait for the
+Render backend service to wake up.
+
+## Author
+
+Đinh Phan Quốc Thắng

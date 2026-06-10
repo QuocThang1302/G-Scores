@@ -63,7 +63,7 @@ export default function Layout({ children }: LayoutProps) {
               to="/"
               className="flex items-center gap-3 text-sidebar-foreground"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-sidebar-accent text-sidebar-accent-contrast shadow-lg shadow-sidebar-accent/25">
+              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-primary-contrast shadow-lg shadow-primary/25">
                 <GraduationCap className="h-6 w-6" aria-hidden="true" />
               </span>
               <span>
@@ -105,7 +105,7 @@ export default function Layout({ children }: LayoutProps) {
             })}
 
             <div className="mt-auto flex items-center gap-3 rounded-lg border border-sidebar-border bg-sidebar-accent-soft/70 px-4 py-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-accent/15 text-sidebar-accent">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-soft text-primary-text">
                 <GraduationCap className="h-5 w-5" aria-hidden="true" />
               </span>
               <div className="min-w-0">
